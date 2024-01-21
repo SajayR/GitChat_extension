@@ -59,12 +59,26 @@ def get_file_directory(sessionId: str):
 def getgitfiles():
     session_id = request.cookies.get('sessionId')  # Retrieve sessionId from cookie
     data = request.get_json()
+    repo_path = os.path.join(os.getcwd(), f'ClonedUserRepo/{session_id}')
+    if os.path.exists(repo_path):
+        os.system(f'rm -rf {repo_path}')
     data['session_id'] = session_id  # Make sure to include sessionId in the data
     thread = threading.Thread(target=gitmain.getGit, args=(data,))
     thread.start()
     return jsonify({"message": "Git processing started..."}), 200
     
-    
+@app.route('/clear_messeges', methods=['POST'])
+def clear_messeges():
+    try:
+        session_id = request.cookies.get('sessionId')
+        frontend = collection.find_one({"session_id": session_id}, {"frontend": 1})
+        prompts = collection.find_one({"session_id": session_id}, {"prompts": 1})
+        files = collection.find_one({"session_id": session_id}, {"gitfileslist": 1})
+        collection.update_one({"session_id": session_id}, {"$set": {"frontend": frontend, "prompts": prompts, "gitfileslist": files}})
+        return jsonify({"message": "Messeges cleared"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Session_id: {session_id} not found"}), 404
+
 
 @app.route('/newprompt', methods=['POST'])
 def chaosbaby():
@@ -88,12 +102,12 @@ def get_messages(session_id: int) -> dict:
     if messages and "frontend" in messages:
         messages = messages["frontend"]
         if len(messages) == 0:
-            return jsonify({"error": "No messages found"}), 404
+            return jsonify({"error": f"Session_id: {session_id} not found/No Messages"}), 404
         num = 1  
         for message in messages:
             frontend_message = {
                 "num": num,
-                "from": message["role"],
+                "from": "bot" if message["role"]=="assistant" else "User",
                 "content": message["content"]
             }
             frontend_messages.append(frontend_message)

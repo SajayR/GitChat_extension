@@ -15,22 +15,27 @@ body {
 }
 
 .App {
-  min-height: 100vh;
   display: flex;
+  height: 100vh;
 }
 
 .sideBar {
-  flex: 3;
-  border-right: 1px solid #fbfbfb;
+  width: 25%; /* Assign a width percentage to the sidebar */
+  min-width: 250px; /* You can set a minimum width for the sidebar if needed */
+  /* ... other styles ... */
 }
+
 
 .main {
   flex: 9;
-  min-height: calc(100vh - 14rem);
+  width: 75%; /* This should be the rest of the width */
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 6rem 10rem 0;
+  justify-content: flex-end; /* Aligns the children to the bottom */
+  height: calc(100vh - 4rem); /* Full height minus the height of the chatFooter */
+  margin: 0; /* Adjust the margin as needed */
+  padding-bottom: 4rem; /* Space for chatFooter */
 }
 
 .logo {
@@ -152,13 +157,12 @@ body {
 }
 
 .chats {
-  overflow: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
   scroll-behavior: smooth;
   width: 100%;
-  max-width: 70rem;
-  height: calc(100vh - 17rem);
+  flex-grow: 1; /* Allows this container to fill up the space */
 }
+
 
 /* .chat {
   margin: 1rem;
@@ -204,10 +208,7 @@ role-label {
   color: #6C757D; /* Assistant color */
 }
 
-.chat {
-  display: flex;
-  margin-bottom: 10px;
-}
+
 
 /* User message styling */
 .user-message {
@@ -229,6 +230,15 @@ role-label {
   max-width: 70%;
   word-wrap: break-word;
   align-self: flex-start; /* Left-align assistant messages */
+
+
+.chat {
+  display: flex;
+  align-items: center;
+  margin: 1rem;
+  padding: 0.5rem;
+  border-radius: 5px;
+
 }
 
 .chat img,
@@ -247,12 +257,17 @@ role-label {
 }
 
 .chatFooter {
-  margin-top: auto;
-  width: 100%;
+  position: fixed; /* Lock the position */
+  bottom: 0; /* Stick to the bottom of the screen */
+  left: 25%; /* This should match the sidebar's width */
+  width: 75%;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between; /* Adjust this as needed */
   align-items: center;
-  justify-content: center;
+  background: #1b1b1e; /* Match the color with your design */
+  padding: 1rem; /* Padding for aesthetics */
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Optional: Adds a shadow for better separation */
+  z-index: 99; /* Ensure it's above other elements */
 }
 
 .inp {
@@ -354,6 +369,7 @@ role-label {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 100;
 }
 
 .dialogContent {
@@ -570,4 +586,48 @@ body {
   .inp {
     width: 100%;
   }
+}
+
+
+/* Add styles for chat messages */
+.chat {
+  display: flex;
+  align-items: center;
+  margin: 1rem;
+  padding: 0.5rem;
+  border-radius: 5px;
+}
+
+/* Styles for messages from the bot */
+.bot-message {
+  background-color: #262626; /* Light gray background */
+  justify-content: flex-start;
+}
+
+/* Styles for messages from the user */
+.user-message {
+  background-color: #F56E0F; /* Slightly darker gray background */
+  justify-content: flex-end;
+}
+
+/* Styles for message text */
+.message-text {
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  max-width: 60%;
+  word-break: break-word;
+}
+
+/* Styles for the bot icon */
+.bot-icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+/* Styles for the user icon */
+.user-icon {
+  width: 40px;
+  height: 40px;
+  margin-left: 10px;
 }

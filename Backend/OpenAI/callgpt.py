@@ -10,8 +10,8 @@ collection = db.ChatStorage
 
 def getanswer(messages: list, session_id: str) -> str:
 
-    if len(messages) >= 7:
-        messages = list(messages[0]) + messages[-5:]
+    if len(messages) >= 5:
+        messages = list(messages[0]) + messages[-3:]
 
     response = openai.chat.completions.create(
     model="gpt-3.5-turbo-1106",
