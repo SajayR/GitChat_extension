@@ -13,6 +13,7 @@ import userIcon from './assets/user.png';
 import GitHubPopup from './GithubPopup';
 import Cookies from 'js-cookie';
 import { v4 as uuidv4 } from 'uuid';  
+import botLogo from './assets/botLogo.png'
 
 
 ReactDOM.render(
@@ -32,6 +33,7 @@ function App() {
   const[sessionId, setSessionId] = useState('');
   const [fileDirectory, setFileDirectory] = useState([]);
   const [showDarkPopup, setShowDarkPopup] = useState(true);
+  const [newCodebaseLink, setNewCodebaseLink] = useState('');
 
 
 
@@ -51,7 +53,7 @@ function App() {
       fetchMessages(sessionId);  // Pass sessionId to fetch messages
       checkStatus(sessionId);
       fetchFileDirectory(sessionId)    // Pass sessionId to check status
-    }, 10000);
+    }, 100);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -72,30 +74,66 @@ function App() {
   
     return root;
   }; 
-  const renderFileDirectory = (directory, path = '') => {
-    const entries = Object.entries(directory);
-    if (!entries.length) return null;  // No files or directories
   
-    return (
-      <ul>
-        {entries.map(([key, value]) => {
-          const fullPath = path ? `${path}/${key}` : key;
-          return (
-            <li key={fullPath}>
-              {value ? (
-                <>
-                  <span className="folder">{key}</span>
-                  {renderFileDirectory(value, fullPath)}
-                </>
-              ) : (
-                <span className="file">{key}</span>
-              )}
-            </li>
-          );
-        })}
-      </ul>
-    );
-  };
+  const [expandedItems, setExpandedItems] = useState({}); // New state to track expanded items
+
+const renderFileDirectory = (directory, path = '', depth = 0) => {
+  const entries = Object.entries(directory);
+
+  if (!entries.length) return null; // No files or directories
+
+  return (
+    <ul style={{ marginTop: '20px', textAlign: 'center', color: '#ddd', listStyle: 'none', fontFamily: 'Roboto Mono, monospace' }}>
+      {entries.map(([key, value]) => {
+        const fullPath = path ? `${path}/${key}` : key;
+
+        const isExpanded = expandedItems[fullPath];
+
+        const toggleExpand = () => {
+          setExpandedItems({
+            ...expandedItems,
+            [fullPath]: !isExpanded,
+          });
+        };
+
+        return (
+          <li key={fullPath} style={{ margin: '7px 0', textAlign: 'left', position: 'relative' }}>
+            {value ? (
+              <>
+                <div
+                  className="folder"
+                  style={{
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    marginBottom: '5px',
+                    color: '#f56e0f', // Light cyan for folders
+                  }}
+                  onClick={toggleExpand}
+                >
+                  {isExpanded ? '▼' : '►'} {key}
+                </div>
+                {isExpanded && (
+                  <div style={{ marginLeft: '25px', borderLeft: '2px dashed #64ffda', padding: '10px' }}>
+                    {/* Adjust the distance and styles as needed */}
+                    {renderFileDirectory(value, fullPath, depth + 1)}
+                  </div>
+                )}
+              </>
+            ) : (
+              <span className="file" style={{ color: '#bbb' }}>{key}</span>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+};
+
+
+  
+
+
+  
 
   const fetchMessages = async (sessionId) => {
     try {
@@ -158,6 +196,7 @@ function App() {
         link: gitHubUrl,
         session_id: sessionId,  // Assuming you have a sessionId, adjust as needed
       });
+      setNewCodebaseLink(gitHubUrl)
       setShowDarkPopup(false);
       setGitHubUrl(''); // Reset the GitHub URL
 
@@ -174,7 +213,19 @@ function App() {
     setShowDarkPopup(false);
   };
 
-  // Function to recursively render file directory items
+  const extractRepoDetails = (githubUrl) => {
+    const parts = githubUrl.split('/');
+    if (parts.length >= 2) {
+      const repoNameWithExtension = parts[parts.length - 1];
+      const repoNameWithoutExtension = repoNameWithExtension.replace(/\.git$/, ''); // Remove .git extension
+      return {
+        user: parts[parts.length - 2],
+        repo: repoNameWithoutExtension,
+      };
+    } else {
+      return { user: 'Unknown', repo: 'Unknown' };
+    }
+  };
 
 
   return (
@@ -185,6 +236,28 @@ function App() {
           <button className='midBtn' onClick={openDialog}>
             <img src={addBtn} alt='' className='addBtn'/>New Codebase
           </button>
+          {newCodebaseLink && (
+  <a
+    href={newCodebaseLink}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="newCodebaseLink"
+    style={{
+      display: 'block',
+      textAlign: 'center',
+      marginTop: '20px',
+      fontFamily: 'Roboto Mono, monospace',
+      color: '#f56e0f',
+      textDecoration: 'none',
+      fontSize: '16px',
+    }}
+  >
+    {extractRepoDetails(newCodebaseLink).user} / {extractRepoDetails(newCodebaseLink).repo}
+  </a>
+)}
+
+
+
         </div>
         <div className='fileDirectory'>
             <h3>File Directory</h3>
@@ -192,14 +265,31 @@ function App() {
         </div>
       </div>
       <div className='main'>
-        <div className='chats'>
-          {messages.map((message, index) => (
-            <div key={index} className={`chat ${message.from === 'bot' ? 'bot' : ''}`}>
-              <img src={message.from === 'bot' ? logo : userIcon} alt=""/>
-              <p className='txt'>{message.content}</p>
-            </div>
-          ))}
+      <div className='chats'>
+  {messages.map((message, index) => (
+    <div key={index} className={`chat ${message.from === 'bot' ? 'bot' : 'user'}`}>
+      <div className="message-info">
+        <div className="image-container">
+          <img
+            src={message.from === 'bot' ? botLogo : userIcon}
+            alt={message.from === 'bot' ? 'Bot Icon' : 'User Icon'}
+          />
         </div>
+        <div className="role-content">
+          <p className={`role-label ${message.from === 'user' ? 'user-role' : 'assistant-role'}`}>
+            {message.from === 'user' ? 'User' : 'Assistant'}
+          </p>
+        </div>
+      </div>
+      {message.from === 'user' ? (
+        <p className="user-message">{message.content}</p>
+      ) : (
+        <p className="assistant-message">{message.content}</p>
+      )}
+    </div>
+  ))}
+</div>
+
         <div className='chatFooter'>
           <div className='inp'>
             <input type='text' 
@@ -226,4 +316,3 @@ function App() {
 }
 
 export default App;
-

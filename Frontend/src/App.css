@@ -160,7 +160,7 @@ body {
   height: calc(100vh - 17rem);
 }
 
-.chat {
+/* .chat {
   margin: 1rem;
   padding: 2rem 3rem;
   font-size: 1.2rem;
@@ -168,6 +168,67 @@ body {
   align-items: flex-start;
   text-align: justify;
   word-break: break-word; /* Add this line */
+ */
+
+role-label {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.message-info{
+  display:flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.image-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.role-label{
+  font-size: 12px;
+  text-align: center
+}
+
+/* User role label styling */
+.user-role {
+  color: #F56E0F; /* User color */
+}
+
+/* Assistant role label styling */
+.assistant-role {
+  color: #6C757D; /* Assistant color */
+}
+
+.chat {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+/* User message styling */
+.user-message {
+  background-color: #F56E0F;
+  color: white;
+  border-radius: 10px;
+  padding: 10px;
+  max-width: 70%;
+  word-wrap: break-word;
+  align-self: flex-end; /* Right-align user messages */
+}
+
+/* Assistant message styling */
+.assistant-message {
+  background-color: #262626;
+  color: white;
+  border-radius: 10px;
+  padding: 10px;
+  max-width: 70%;
+  word-wrap: break-word;
+  align-self: flex-start; /* Left-align assistant messages */
 }
 
 .chat img,
