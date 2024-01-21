@@ -16,10 +16,10 @@ systemmessage = "You are an LLM exceptionally good at understanding and helping 
 def returnkaro(url, session_id):  #url to contain c lone link
     #url is of type https://github.com/{user}/{repo}.git
     pattern = r"https://github\.com/(.+)/(.+)\.git"
-    print("URL: ", url)
+    #print("URL: ", url)
     match = re.search(pattern, url)
     user, repo = match.groups()
-    print(user,repo)
+    #print(user,repo)
     return [extracting.process_direc_for_filenames(url, session_id), user, repo]
 
 def getGit(details):   #json file
@@ -36,7 +36,7 @@ def getGit(details):   #json file
     session_id = dic["session_id"]
     # Create a file with the session id as the name
     cummiesinmytummies = returnkaro(link, session_id) # Get the contents of the repo the fucking file structure 
-    print(cummiesinmytummies)
+    #print(cummiesinmytummies)
     user = cummiesinmytummies[1]
     repo = cummiesinmytummies[2]
     if collection.find_one({"session_id": session_id}):

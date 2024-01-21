@@ -14,7 +14,7 @@ def getrelevantcode(filemessages, filelist: list, owner, repo, session_id) -> st
     relevantfiles = json.loads(relevantfiles)
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", relevantfiles)
     filelists =[i for i in relevantfiles.keys()]
-    return extracting.get_file_prompt(owner, repo, filelists)
+    return extracting.get_file_prompt(session_id, filelists)
 
 
 
