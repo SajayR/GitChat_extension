@@ -1,10 +1,10 @@
-# GitChatting Codebase Documentation
+# GitChat Codebase Documentation
 
-Welcome to the GitChatting codebase. This document provides a comprehensive overview of the project structure, setup instructions, and other relevant information for developers.
+Welcome to the GitChat codebase. This document provides a comprehensive overview of the project structure, setup instructions, and other relevant information for developers.
 
 ## Overview
 
-GitChatting is a web application that allows users to interact with a chatbot for assistance with codebase-related queries. The frontend is built with React and styled using CSS, while the backend services are not included in the provided snippets.
+GitChat is a web application that allows users to interact with a chatbot for assistance with codebase-related queries. The frontend is built with React and styled using CSS, while the backend services are not included in the provided snippets.
 
 ## Project Structure
 
@@ -15,7 +15,7 @@ The project is divided into two main directories:
 
 ### Frontend Structure
 
-- `public`: Static files like `index.html[, ](file:///Users/ciscorrr/Documents/CisStuff/chormadarchod/Frontend/README.md#7%2C25-7%2C25)manifest.json[, and ](file:///Users/ciscorrr/Documents/CisStuff/chormadarchod/Frontend/README.md#40%2C105-40%2C105)robots.txt`.
+- `public`: Static files.
 - `src`: Source code for the React application, including components, styles, and utility functions.
   - `App.js`: The main React component that orchestrates the user interface.
   - `App.css`: Global styles for the application.
