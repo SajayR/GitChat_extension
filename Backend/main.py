@@ -46,7 +46,7 @@ def get_file_directory(sessionId: str):
     session_data = collection.find_one({"session_id": sessionId}, {"gitfileslist": 1})
     #print(session_data)
 
-    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n", session_data["gitfileslist"])
+    #print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n", session_data["gitfileslist"])
     #if session_data and "gitfileslist" in session_data:
     if session_data:
         return jsonify({"file_directory": session_data["gitfileslist"]})

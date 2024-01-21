@@ -74,8 +74,8 @@ def process_direc_for_filenames(link, session_id):
     file_paths = []
     for root, dirs, files in os.walk(f'ClonedUserRepo/{session_id}'):
         for file in files:
-            # Construct the file path relative to the cloned directory
-            file_path = os.path.relpath(os.path.join(root, file), f'ClonedUserRepo{session_id}')
+            # Construct the file path relative to the session_id directory
+            file_path = os.path.relpath(os.path.join(root, file), f'ClonedUserRepo/{session_id}')
             file_paths.append(file_path)
 
     # Remove the "ClonedUserRepo" directory after processing
@@ -83,24 +83,25 @@ def process_direc_for_filenames(link, session_id):
     
     return file_paths   #returns a list of all fucking file paths
 
-
+def get_local_file_contents(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            return file.read()
+    except Exception as e:
+        print(f"Error reading {file_path}: {e}")
+        return None
+    
 def get_file_prompt(session_id, file_paths):
+    all_contents = ""
     
     for file_path in file_paths:
-        # Construct the full API URL for the file content
-        file_content = get_file_contents(file_path)
+        # Get the contents of the file stored locally
+        file_text = get_local_file_contents(f"/Users/ciscorrr/Documents/CisStuff/GitChatting/Backend/ClonedUserRepo/{session_id}/{file_path}")
 
-        # Skip if file_content is None or empty
-        if not file_content:
+        # Skip if file_text is None or empty
+        if not file_text:
             print(f"Could not fetch content for {file_path}")
             continue
-
-        # If you want the content as text, decode it (assuming it's base64)
-        if 'content' in file_content and file_content['encoding'] == 'base64':
-            file_data = base64.b64decode(file_content['content'])
-            file_text = file_data.decode('utf-8')
-        else:
-            file_text = file_content
 
         all_contents += f"###File Name: {file_path}\n###Content: \n{file_text}\n\n"
 
