@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import logo from './assets/logo2.png';
@@ -32,6 +32,7 @@ function App() {
   const[sessionId, setSessionId] = useState('');
   const [fileDirectory, setFileDirectory] = useState([]);
   const [showDarkPopup, setShowDarkPopup] = useState(true);
+  const chatsRef = React.useRef(null);
 
 
 
@@ -53,7 +54,10 @@ function App() {
       fetchFileDirectory(sessionId)    // Pass sessionId to check status
     }, 100);
     return () => clearInterval(intervalId);
-  }, []);
+    if (chatsRef.current) {
+      chatsRef.current.scrollTop = chatsRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const parseFileDirectory = (filePaths) => {
     const root = {};
@@ -100,11 +104,24 @@ function App() {
   const fetchMessages = async (sessionId) => {
     try {
       const response = await axios.get(`/get_messages/${sessionId}`);
-      setMessages(response.data);
+      // Check if the status code is 404 (Not Found)
+      if (response.status === 404) {
+        // Set a default welcome message
+        setMessages([{ from: "bot", content: "Welcome to GitChat! Start by typing your message." }]);
+      } else {
+        // If messages are found, set them as usual
+        setMessages(response.data);
+      }
     } catch (error) {
       console.error('Error fetching messages:', error);
+      // Handle 404 specifically
+      if (error.response && error.response.status === 404) {
+        // Set a default welcome message
+        setMessages([{ from: "bot", content: "Welcome to GitChat! Start by typing your message." }]);
+      }
     }
   };
+  
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -137,6 +154,17 @@ function App() {
     }
   };
   
+  const clearChat = async () => {
+    try {
+      const response = await axios.post('/clear_messages', {
+        session_id: sessionId,
+      });
+      console.log(response.data.message); // Messages cleared! // Clear the messages array
+
+    } catch (error) {
+      console.error('Error clearing messages:', error);
+    }
+  }
 
   const handleSend = async () => {
     try {
@@ -185,6 +213,9 @@ function App() {
           <button className='midBtn' onClick={openDialog}>
             <img src={addBtn} alt='' className='addBtn'/>New Codebase
           </button>
+          <button className='midBtn' onClick={clearChat}>
+            <img src={msgIcon} alt='' className='msgIcon'/>Clear Chat
+          </button>
         </div>
         <div className='fileDirectory'>
             <h3>File Directory</h3>
@@ -192,27 +223,30 @@ function App() {
         </div>
       </div>
       <div className='main'>
-        <div className='chats'>
-          {messages.map((message, index) => (
-            <div key={index} className={`chat ${message.from === 'bot' ? 'bot' : ''}`}>
-              <img src={message.from === 'bot' ? logo : userIcon} alt=""/>
-              <p className='txt'>{message.content}</p>
-            </div>
-          ))}
-        </div>
-        <div className='chatFooter'>
-          <div className='inp'>
-            <input type='text' 
-            placeholder='Send a message' 
-            value={input} 
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyPress} // Add the onKeyPress event handler
-          />
-            <button className='send' onClick={handleSend}><img src={sendBtn} alt='' /></button>
-          </div>
-          <p>Status: {status}</p>
-        </div>
+      <div className='chats' ref={chatsRef}>
+        {messages.map((message, index) => (
+        <div key={index} className={`chat ${message.from === 'bot' ? 'bot-message' : 'user-message'}`}>
+          {message.from === 'bot' && <img src={logo} alt="Bot" className="bot-icon" />}
+          <p className='message-text'>{message.content}</p>
+        {message.from !== 'bot' && <img src={userIcon} alt="User" className="user-icon" />}
       </div>
+      ))}
+      </div>
+  {!showDarkPopup && (
+  <div className='chatFooter'>
+    <div className='inp'>
+      <input type='text' 
+      placeholder='Send a message' 
+      value={input} 
+      onChange={(e) => setInput(e.target.value)}
+      onKeyDown={handleKeyPress} // Add the onKeyPress event handler
+      />
+      <button className='send' onClick={handleSend}><img src={sendBtn} alt='' /></button>
+    </div>
+    <p>Status: {status}</p>
+  </div>
+)}
+</div>
 
       <GitHubPopup
         show={showDarkPopup}

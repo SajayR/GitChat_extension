@@ -1,6 +1,6 @@
 import requests
 from requests.auth import HTTPBasicAuth
-
+import os 
 import re
 import base64
 
@@ -93,10 +93,16 @@ def get_local_file_contents(file_path):
     
 def get_file_prompt(session_id, file_paths):
     all_contents = ""
+    script_dir = os.path.dirname(__file__)
+    # Move up one directory to get to the parent of GitScripts
+    parent_dir = os.path.dirname(script_dir)
+    # Construct the path to the ClonedUserRepo directory
+    cloned_repo_path = os.path.join(parent_dir, 'ClonedUserRepo', session_id)
     
     for file_path in file_paths:
         # Get the contents of the file stored locally
-        file_text = get_local_file_contents(f"/Users/ciscorrr/Documents/CisStuff/GitChatting/Backend/ClonedUserRepo/{session_id}/{file_path}")
+        full_file_path = os.path.join(cloned_repo_path, file_path)
+        file_text = get_local_file_contents(full_file_path)
 
         # Skip if file_text is None or empty
         if not file_text:
