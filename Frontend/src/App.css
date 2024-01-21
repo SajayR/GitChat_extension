@@ -230,7 +230,7 @@ role-label {
   max-width: 70%;
   word-wrap: break-word;
   align-self: flex-start; /* Left-align assistant messages */
-
+}
 
 .chat {
   display: flex;

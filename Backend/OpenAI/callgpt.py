@@ -5,6 +5,49 @@ openai.api_key = "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"
 client = MongoClient('mongodb://localhost:27017/')
 db = client.GitChat
 collection = db.ChatStorage
+import together
+
+together.api_key = "eb9e069bfd814f975161a08052124cfd4d69a088f4f0126beefe13c33abb2387"
+
+togetherclient = openai.OpenAI(
+    api_key="eb9e069bfd814f975161a08052124cfd4d69a088f4f0126beefe13c33abb2387",
+    base_url="https://api.together.xyz/v1",
+)
+
+'''
+
+def getanswer(messages: list, session_id: str) -> str:
+    if len(messages) >= 5:
+        messages = list(messages[0]) + messages[-3:]
+    chat_completion = togetherclient.chat.completions.create(
+        model="teknium/OpenHermes-2p5-Mistral-7B",
+        messages=messages,
+        temperature=0.7,
+        max_tokens=3072)
+    response = chat_completion.choices[0].message.content
+    collection.update_one({"session_id": session_id}, {"$push": {"frontend": {"role": "assistant", "content": response}}})
+    
+      
+    return response
+
+
+
+'''
+
+
+
+#MESSEGES OVER HERE NEEDS TO BE FRONTEND MESSAGES
+def getfilenamestopull(filemessages, filelist) -> str:
+    response = openai.chat.completions.create(
+    model="gpt-4-1106-preview",
+    response_format={ "type": "json_object" },
+    messages=filemessages
+    )
+    return response.choices[0].message.content 
+
+
+
+
 
 
 
@@ -14,7 +57,7 @@ def getanswer(messages: list, session_id: str) -> str:
         messages = list(messages[0]) + messages[-3:]
 
     response = openai.chat.completions.create(
-    model="gpt-3.5-turbo-1106",
+    model="gpt-4-1106-preview",
     messages=messages,
     stream=True
     )
@@ -37,12 +80,3 @@ def getanswer(messages: list, session_id: str) -> str:
                 )  
     return reply_content
 
-
-#MESSEGES OVER HERE NEEDS TO BE FRONTEND MESSAGES
-def getfilenamestopull(filemessages, filelist) -> str:
-    response = openai.chat.completions.create(
-    model="gpt-4-1106-preview",
-    response_format={ "type": "json_object" },
-    messages=filemessages
-    )
-    return response.choices[0].message.content 
