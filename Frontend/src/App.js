@@ -55,7 +55,7 @@ function App() {
       fetchMessages(sessionId);  // Pass sessionId to fetch messages
       checkStatus(sessionId);
       fetchFileDirectory(sessionId)    // Pass sessionId to check status
-    }, 10000);
+    }, 100);
     return () => clearInterval(intervalId);
     if (chatsRef.current) {
       chatsRef.current.scrollTop = chatsRef.current.scrollHeight;

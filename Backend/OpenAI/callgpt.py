@@ -69,11 +69,8 @@ def getanswer(messages: list, session_id: str) -> str:
         reply_content = ""
         if response is not None:
             for chunk in response:
-                if chunk.choices[0].delta.content:
-                    if chunk.choices[0].delta.content == "\n":
-                        reply_content += "LINEBREAK HERE"
-                    else:
-                        reply_content += chunk.choices[0].delta.content
+                if chunk.choices[0].delta.content: 
+                    reply_content += chunk.choices[0].delta.content
                     # Update the MongoDB document
                     collection.update_one(
                         {"session_id": session_id},
