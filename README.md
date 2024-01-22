@@ -28,8 +28,10 @@ To get started with the frontend:
 
 1. Navigate to the `Frontend` directory.
 2. Install dependencies with `npm install`.
-3. Start the development server with `npm start`.
-
+3. Start the frontend development server with `npm start`.
+4. Navigate to the 'Backend' directory
+5. Start the backend server with 'python main.py'
+   
 ## Available Scripts
 
 - `npm start`: Runs the app in development mode.
