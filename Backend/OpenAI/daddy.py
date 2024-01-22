@@ -41,8 +41,8 @@ def newprompt(prompt: str, session_id: str) -> None:
     messages = collection.find_one({"session_id": session_id})["prompts"]
 
     answer = callgpt.getanswer(messages, session_id) 
-    
-    collection.update_one({"session_id": session_id}, {"$push": {"prompts": {"role": "assistant", "content": answer}}})
+    if answer!="Sorry, there was an error. Please try again.":
+        collection.update_one({"session_id": session_id}, {"$push": {"prompts": {"role": "assistant", "content": answer}}})
 
     return None
 

@@ -15,7 +15,8 @@ systemmessage = "You are an LLM exceptionally good at understanding and helping 
 
 def returnkaro(url, session_id):  #url to contain c lone link
     #url is of type https://github.com/{user}/{repo}.git
-    pattern = r"https://github\.com/(.+)/(.+)\.git"
+    print(url)
+    pattern = r"https://github\.com/(.+)/(.+)(?:\.git)?$"
     #print("URL: ", url)
     match = re.search(pattern, url)
     user, repo = match.groups()

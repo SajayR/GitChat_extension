@@ -220,19 +220,28 @@ const renderFileDirectory = (directory, path = '', depth = 0) => {
   };
 
   const handleGitHubSubmit = async () => {
+    // Ensure the URL starts with https:// and ends with .git
+    let formattedUrl = gitHubUrl;
+    if (!formattedUrl.startsWith('https://')) {
+      formattedUrl = 'https://' + formattedUrl;
+    }
+    if (!formattedUrl.endsWith('.git')) {
+      formattedUrl += '.git';
+    }
+  
     try {
       const response = await axios.post('/gitget', {
-        link: gitHubUrl,
-        session_id: sessionId,  // Assuming you have a sessionId, adjust as needed
+        link: formattedUrl, // Use the formatted URL here
+        session_id: sessionId,
       });
-      setNewCodebaseLink(gitHubUrl)
+      setNewCodebaseLink(formattedUrl); // Store the formatted URL
       setShowDarkPopup(false);
-      setGitHubUrl(''); // Reset the GitHub URL
-
+      setGitHubUrl(''); // Clear the input field
     } catch (error) {
       console.error('Error submitting GitHub URL:', error);
     }
   };
+  
 
   const openDialog = () => {
     setShowDarkPopup(true);
@@ -264,9 +273,6 @@ const renderFileDirectory = (directory, path = '', depth = 0) => {
           <div className='upperSideTop'><img src={logo} alt='' className='logo'/><span className='brand'>GitChat</span></div>
           <button className='midBtn' onClick={openDialog}>
             <img src={addBtn} alt='' className='addBtn'/>New Codebase
-          </button>
-          <button className='midBtn' onClick={clearChat}>
-            <img src={msgIcon} alt='' className='msgIcon'/>Clear Chat
           </button>
           {newCodebaseLink && (
   <a href={newCodebaseLink}

@@ -5,6 +5,7 @@ openai.api_key = "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"
 client = MongoClient('mongodb://localhost:27017/')
 db = client.GitChat
 collection = db.ChatStorage
+'''
 import together
 
 together.api_key = "eb9e069bfd814f975161a08052124cfd4d69a088f4f0126beefe13c33abb2387"
@@ -13,8 +14,6 @@ togetherclient = openai.OpenAI(
     api_key="eb9e069bfd814f975161a08052124cfd4d69a088f4f0126beefe13c33abb2387",
     base_url="https://api.together.xyz/v1",
 )
-
-'''
 
 def getanswer(messages: list, session_id: str) -> str:
     if len(messages) >= 5:
@@ -52,31 +51,34 @@ def getfilenamestopull(filemessages, filelist) -> str:
 
 
 def getanswer(messages: list, session_id: str) -> str:
-
-    if len(messages) >= 5:
-        messages = list(messages[0]) + messages[-3:]
-
-    response = openai.chat.completions.create(
-    model="gpt-3.5-turbo-1106",
-    messages=messages,
-    stream=True
-    )
-    document = collection.find_one({"session_id": session_id})
+    try:
+        messages = [messages[0], messages[-1]]
+        print("\n\n\n\n\n\n\n\n", messages)
+        response = openai.chat.completions.create(
+        model="gpt-3.5-turbo-1106",
+        messages=messages,
+        stream=True
+        )
+        document = collection.find_one({"session_id": session_id})
     
-    prompts_length = len(document['frontend'])
-    last_element_index = prompts_length 
-    last_element_content = f"frontend.{last_element_index}.content"
-    last_element_role = f"frontend.{last_element_index}.role"
+        prompts_length = len(document['frontend'])
+        last_element_index = prompts_length 
+        last_element_content = f"frontend.{last_element_index}.content"
+        last_element_role = f"frontend.{last_element_index}.role"
 
-    reply_content = ""
-    if response is not None:
-        for chunk in response:
-            if chunk.choices[0].delta.content:
-                reply_content += chunk.choices[0].delta.content
-                # Update the MongoDB document
-                collection.update_one(
-                    {"session_id": session_id},
-                    {"$set": {last_element_content: reply_content, last_element_role: "assistant"}}
-                )  
+        reply_content = ""
+        if response is not None:
+            for chunk in response:
+                if chunk.choices[0].delta.content: 
+                    reply_content += chunk.choices[0].delta.content
+                    # Update the MongoDB document
+                    collection.update_one(
+                        {"session_id": session_id},
+                        {"$set": {last_element_content: reply_content, last_element_role: "assistant"}}
+                    )  
+    except:
+        reply_content = "Sorry, there was an error. Please try again. :3"
+        collection.update_one({"session_id": session_id},{"$pop": {"prompts": 1}})
+        collection.update_one({"session_id": session_id}, {"$push": {"frontend": {"role": "assistant", "content": reply_content}}})
     return reply_content
 

@@ -111,6 +111,6 @@ def get_file_prompt(session_id, file_paths):
 
         all_contents += f"###File Name: {file_path}\n###Content: \n{file_text}\n\n"
 
-    return all_contents
+    return all_contents if len(all_contents) <25000 else all_contents[:25000]
 
 
