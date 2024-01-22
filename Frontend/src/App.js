@@ -274,9 +274,6 @@ const renderFileDirectory = (directory, path = '', depth = 0) => {
           <button className='midBtn' onClick={openDialog}>
             <img src={addBtn} alt='' className='addBtn'/>New Codebase
           </button>
-          <button className='midBtn' onClick={clearChat}>
-            <img src={msgIcon} alt='' className='msgIcon'/>Clear Chat
-          </button>
           {newCodebaseLink && (
   <a href={newCodebaseLink}
     target="_blank"
