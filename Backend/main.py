@@ -74,7 +74,7 @@ def clear_messeges():
         frontend = collection.find_one({"session_id": session_id}, {"frontend": 1})
         prompts = collection.find_one({"session_id": session_id}, {"prompts": 1})
         files = collection.find_one({"session_id": session_id}, {"gitfileslist": 1})
-        collection.update_one({"session_id": session_id}, {"$set": {"frontend": frontend, "prompts": prompts, "gitfileslist": files}})
+        collection.update_one({"session_id": session_id}, {"$set": {"frontend": [], "prompts": [prompts[0]], "gitfileslist": [files[0]]}})
         return jsonify({"message": "Messeges cleared"}), 200
     except Exception as e:
         return jsonify({"error": f"Session_id: {session_id} not found"}), 404
