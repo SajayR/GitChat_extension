@@ -5,7 +5,7 @@ import re
 import base64
 
 # Personal access token for authentication
-access_token = 'Y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'   #remove this before pushing
+access_token = ''   #remove this before pushing
 auth = HTTPBasicAuth('SajayR', access_token)
 headers = {'Accept': 'application/vnd.github.v3+json'}
 
