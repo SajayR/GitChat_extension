@@ -171,8 +171,8 @@ body {
   display: flex;
   align-items: flex-start;
   text-align: justify;
-  word-break: break-word; /* Add this line */
- */
+  word-break: break-word;  Add this line */
+
 
 role-label {
   font-size: 12px;
