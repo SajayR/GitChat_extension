@@ -45,13 +45,3 @@ def newprompt(prompt: str, session_id: str) -> None:
         collection.update_one({"session_id": session_id}, {"$push": {"prompts": {"role": "assistant", "content": answer}}})
 
     return None
-
-       
-
-
-      
-    
-
-
-
-    

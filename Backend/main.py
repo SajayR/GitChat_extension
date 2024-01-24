@@ -59,7 +59,7 @@ def get_file_directory(sessionId: str):
 def getgitfiles():
     session_id = request.cookies.get('sessionId')  # Retrieve sessionId from cookie
     data = request.get_json()
-    repo_path = os.path.join(os.getcwd(), f'ClonedUserRepo/{session_id}')
+    repo_path = f'/home/cisco/Documents/GitChatting/Backend/ClonedUserRepo/{session_id}'
     if os.path.exists(repo_path):
         os.system(f'rm -rf {repo_path}')
     data['session_id'] = session_id  # Make sure to include sessionId in the data

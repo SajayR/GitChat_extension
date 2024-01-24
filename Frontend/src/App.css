@@ -246,33 +246,32 @@ role-label {
 }
 
 .chatFooter {
-  position: fixed; /* Lock the position */
-  bottom: 0; /* Stick to the bottom of the screen */
-  left: 25%; /* This should match the sidebar's width */
+  position: fixed; /* Keep it at the bottom */
+  bottom: 0;
+  left: 25%;
   width: 75%;
   display: flex;
-  justify-content: space-between; /* Adjust this as needed */
   align-items: center;
-  background: #1b1b1e; /* Match the color with your design */
-  padding: 1rem; /* Padding for aesthetics */
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Optional: Adds a shadow for better separation */
-  z-index: 99; /* Ensure it's above other elements */
-}
-
-.inp {
-  padding: 0.5rem;
+  justify-content: space-between; /* Space between input and status */
   background: #1b1b1e;
+  padding: 1rem;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 99;
+}
+.inp {
+  flex-grow: 1; /* Allow input to grow and fill available space */
   display: flex;
   align-items: center;
+  background: #1b1b1e;
   border-radius: 0.5rem;
-  width: 68rem;
+  margin-right: 1rem; /* Add margin between input and button */
 }
 
 .inp > input {
-  width: calc(100% - 3rem);
-  outline: none;
-  padding: 1.25rem;
-  color: #fbfbfb;
+  flex-grow: 1; /* Input grows to take available space */
+  padding: 1rem; /* Add more padding for visual space */
+  margin-right: 0.5rem; /* Space between input and send button */
+  color: #fbfbfb !important;
 }
 
 .inp > input,
@@ -282,9 +281,15 @@ role-label {
 }
 
 .chatFooter > p {
-  margin: 2rem 0;
+  background: #262626; /* Different background to distinguish the box */
+  color: #fff;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  margin: 0; /* Reset default margin */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional: Adds a shadow for depth */
+  min-width: 120px; /* Set a minimum width for consistency */
+  text-align: center; /* Center the text within the status box */
 }
-
 
 @media (max-width: 768px) {
   .App {
@@ -613,6 +618,8 @@ body {
   max-width: 100%;
   word-break: break-word;
   white-space: pre-wrap;
+  font-size: 16px;
+  font-family: 'Roboto Mono', monospace;
 }
 
 /* Styles for the bot icon */

@@ -1,7 +1,7 @@
 import openai
 import os
 from pymongo import MongoClient
-openai.api_key = "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"
+openai.api_key = "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"
 client = MongoClient('mongodb://localhost:27017/')
 db = client.GitChat
 collection = db.ChatStorage
@@ -28,7 +28,8 @@ def getanswer(messages: list, session_id: str) -> str:
     
       
     return response
-
+gpt-4-1106-preview
+gpt-3.5-turbo-1106
 
 
 '''
@@ -55,7 +56,7 @@ def getanswer(messages: list, session_id: str) -> str:
         messages = [messages[0], messages[-1]]
         print("\n\n\n\n\n\n\n\n", messages)
         response = openai.chat.completions.create(
-        model="gpt-3.5-turbo-1106",
+        model="gpt-4-1106-preview",
         messages=messages,
         stream=True
         )
@@ -81,4 +82,3 @@ def getanswer(messages: list, session_id: str) -> str:
         collection.update_one({"session_id": session_id},{"$pop": {"prompts": 1}})
         collection.update_one({"session_id": session_id}, {"$push": {"frontend": {"role": "assistant", "content": reply_content}}})
     return reply_content
-

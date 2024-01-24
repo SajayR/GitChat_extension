@@ -9,7 +9,7 @@ import msgIcon from './assets/message.svg';
 import saved from './assets/bookmark.svg';
 import rocket from './assets/rocket.svg';
 import sendBtn from './assets/send.svg';
-import userIcon from './assets/user.png';
+import userIcon from './assets/botLogo.png';
 import GitHubPopup from './GithubPopup';
 import Cookies from 'js-cookie';
 import { v4 as uuidv4 } from 'uuid';  
@@ -163,10 +163,11 @@ const renderFileDirectory = (directory, path = '', depth = 0) => {
   
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();  // Prevent the default form submission on pressing 'Enter'
-      handleSend();         // Call the handleSend function
-    }
+  
+  if (e.key === 'Enter' && status.toLowerCase() !== 'processing') {
+    e.preventDefault(); // Prevent the default form submission on pressing 'Enter'
+    handleSend();       // Call the handleSend function only if status is not 'processing'
+  }
   };
 
   const checkStatus = async (sessionId) => {
@@ -319,7 +320,7 @@ const renderFileDirectory = (directory, path = '', depth = 0) => {
       onChange={(e) => setInput(e.target.value)}
       onKeyDown={handleKeyPress} // Add the onKeyPress event handler
       />
-      <button className='send' onClick={handleSend}><img src={sendBtn} alt='' /></button>
+      <button className='send' onClick={handleSend} disabled={status.toLowerCase() === 'processing'}><img src={sendBtn} alt='' /></button>
     </div>
     <p>Status: {status}</p>
   </div>
