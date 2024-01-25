@@ -3,6 +3,11 @@ from requests.auth import HTTPBasicAuth
 import os 
 import re
 import base64
+from pymongo import MongoClient
+
+client = MongoClient('mongodb://localhost:27017/')
+db = client.GitChat
+collection = db.ChatStorage
 
 # Personal access token for authentication
 access_token = ''   #remove this before pushing
@@ -69,13 +74,13 @@ def process_direc_for_filenames(link, session_id):
     import os
 
     # Clone the repository into a folder named "ClonedUserRepo"
-    subprocess.run(['git', 'clone', link, f'ClonedUserRepo/{session_id}'], check=True)
+    subprocess.run(['git', 'clone', link, f'/home/cisco/Documents/GitChatting/Backend/ClonedUserRepo/{session_id}'], check=True)
 
     file_paths = []
-    for root, dirs, files in os.walk(f'ClonedUserRepo/{session_id}'):
+    for root, dirs, files in os.walk(f'/home/cisco/Documents/GitChatting/Backend/ClonedUserRepo/{session_id}'):
         for file in files:
             # Construct the file path relative to the session_id directory
-            file_path = os.path.relpath(os.path.join(root, file), f'ClonedUserRepo/{session_id}')
+            file_path = os.path.relpath(os.path.join(root, file), f'/home/cisco/Documents/GitChatting/Backend/ClonedUserRepo/{session_id}')
             file_paths.append(file_path)
 
     # Remove the "ClonedUserRepo" directory after processing
@@ -93,12 +98,10 @@ def get_local_file_contents(file_path):
     
 def get_file_prompt(session_id, file_paths):
     all_contents = ""
-    script_dir = os.path.dirname(__file__)
-    # Move up one directory to get to the parent of GitScripts
-    parent_dir = os.path.dirname(script_dir)
-    # Construct the path to the ClonedUserRepo directory
-    cloned_repo_path = os.path.join(parent_dir, 'ClonedUserRepo', session_id)
-    
+    cloned_repo_path = f'/home/cisco/Documents/GitChatting/Backend/ClonedUserRepo/{session_id}'
+    owner = collection.find_one({"session_id": session_id})["user"]
+    repo = collection.find_one({"session_id": session_id})["repo"]
+    all_contents += f"\n#Repo Name: {owner}/{repo} \n "
     for file_path in file_paths:
         # Get the contents of the file stored locally
         full_file_path = os.path.join(cloned_repo_path, file_path)
@@ -108,9 +111,8 @@ def get_file_prompt(session_id, file_paths):
         if not file_text:
             print(f"Could not fetch content for {file_path}")
             continue
-
         all_contents += f"###File Name: {file_path}\n###Content: \n{file_text}\n\n"
 
-    return all_contents if len(all_contents) <25000 else all_contents[:25000]
+    return all_contents if len(all_contents) <60000 else all_contents[:60000]
 
 
