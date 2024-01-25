@@ -1,17 +1,19 @@
 import openai
 import os
 from pymongo import MongoClient
-openai.api_key = "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"
+
+openai.api_key = ""
+
 client = MongoClient('mongodb://localhost:27017/')
 db = client.GitChat
 collection = db.ChatStorage
 '''
 import together
 
-together.api_key = "eb9e069bfd814f975161a08052124cfd4d69a088f4f0126beefe13c33abb2387"
+together.api_key = ""
 
 togetherclient = openai.OpenAI(
-    api_key="eb9e069bfd814f975161a08052124cfd4d69a088f4f0126beefe13c33abb2387",
+    api_key="",
     base_url="https://api.together.xyz/v1",
 )
 
@@ -54,7 +56,7 @@ def getfilenamestopull(filemessages, filelist) -> str:
 def getanswer(messages: list, session_id: str) -> str:
     try:
         messages = [messages[0], messages[-1]]
-        print("\n\n\n\n\n\n\n\n", messages)
+
         response = openai.chat.completions.create(
         model="gpt-4-1106-preview",
         messages=messages,
