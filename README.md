@@ -1,56 +1,92 @@
-# GitChat Codebase Documentation
+# GitChat: A Web Interface for Understanding Codebases
 
-Welcome to the GitChat codebase. This document provides a comprehensive overview of the project structure, setup instructions, and other relevant information for developers.
+GitChat is a web application tailored to facilitate conversations around large codebases by providing an interactive chat interface through which users can ask questions about the code. The application employs OpenAI's GPT models to interpret user inquiries and to reference relevant parts of the codebase, enhancing the understandability of massive projects.
 
-## Overview
+## Key Features
 
-GitChat is a web application that allows users to interact with a chatbot for assistance with codebase-related queries. The frontend is built with React and styled using CSS, while the backend services are not included in the provided snippets.
+- Chatbot interface to interact and ask questions on a massive codebase.
+- Integration with GitHub to fetch repositories and analyze code.
+- A web-based frontend built with React, providing a user-friendly experience.
+- Backend support using Flask to manage requests and leverage the OpenAI API for natural language understanding.
 
 ## Project Structure
 
-The project is divided into two main directories:
+The GitChat codebase comprises several key components, as outlined below:
 
-- `Frontend`: Contains all the React components, styles, and assets for the user interface.
-- `Backend`: Contains the flask server-side logic.
+- `Backend`: A Flask-powered server that handles requests and communicates with the OpenAI API and MongoDB for session management.
+  - `OpenAI`: Contains modules such as `callgpt.py` for interacting with the OpenAI API to process user questions and `daddy.py` which orchestrates the fetching of relevant code given a user’s prompt.
+  - `GitScripts`: Scripts like `extracting.py` for extracting repository contents from GitHub and `gitmain.py` to manage the retrieval and processing of the Git repository structure.
+  - `main.py`: The Flask application entry point that sets up the server and endpoints.
 
-### Frontend Structure
+- `Frontend`: The user interface created with React.
+  - `src`: Contains the source code of the React application, including `App.js` which is the main component handling user interactions and display logic.
 
-- `public`: Static files.
-- `src`: Source code for the React application, including components, styles, and utility functions.
-  - `App.js`: The main React component that orchestrates the user interface.
-  - `App.css`: Global styles for the application.
-  - `index.js`: Entry point for the React application.
-  - `GithubPopup.js`: A React component for the GitHub URL submission popup.
+## Dependencies
 
-## Setup Instructions
+- Frontend: React.js, Axios, React-DOM, js-cookie, uuid
+- Backend: Flask, PyMongo, OpenAI, Python-dotenv
+- Database: MongoDB
+- External: OpenAI API, GitHub API
 
-To get started with the frontend:
+## Getting Started
+
+To get GitChat up and running, follow the steps below for setup:
+
+### Backend Setup
+
+1. Navigate to the `Backend` directory.
+2. Ensure MongoDB is running on your local machine.
+3. Set up the necessary environment variables, including your OpenAI API key.
+4. Start the Flask server: `python main.py`.
+
+### Frontend Setup
 
 1. Navigate to the `Frontend` directory.
-2. Install dependencies with `npm install`.
-3. Start the frontend development server with `npm start`.
-4. Navigate to the 'Backend' directory
-5. Start the backend server with 'python main.py'
-   
-## Available Scripts
+2. Run `npm install` to install the necessary node modules.
+3. Set Environment Variables for frontend as necessary.
+4. Start the React app using `npm start`.
 
-- `npm start`: Runs the app in development mode.
-- `npm test`: Launches the test runner.
-- `npm run build`: Builds the app for production.
-- `npm run eject`: Ejects the app from the create-react-app build tool.
+## Usage
 
-## Deployment
+Once both the frontend and backend are set up, open your web browser and go to `http://localhost:3000` (or the port you specified) to access GitChat. Here, users can:
 
-Refer to the `create-react-app` [deployment documentation](https://facebook.github.io/create-react-app/docs/deployment) for instructions on deploying the application.
+- Enter a GitHub repository URL to fetch the codebase.
+- Post questions or prompts in the chat interface.
+- Review the chatbot's responses and suggested sections of the code.
+- Navigate the directory of the fetched GitHub repository.
 
-## License
+## API Reference
 
-The project is licensed under the MIT License. See the `LICENSE` file in the `Frontend` directory for full license text.
+A partial API reference is as follows:
+
+- `/gitget`: POST request to fetch files from a Git repository.
+- `/newprompt`: POST request to send a new prompt to the backend.
+- `/get_messages/<session_id>`: GET request to retrieve chat messages for a session.
+- `/check_status/<session_id>`: GET request to check the status of processing for a session.
+
+Use a REST client like Postman or browser extensions to interact with these APIs.
+
+## Database Schema
+
+The MongoDB schema for session storage consists of the following:
+
+- `session_id`: A unique identifier for each user session.
+- `user`: GitHub username.
+- `repo`: Repository name.
+- `gitfileslist`: List of file paths in the repository.
+- `frontend`: Frontend chat messages.
+- `prompts`: User prompts and system messages.
 
 ## Contributing
 
-Contributions are welcome. Please follow the existing code style and submit a pull request for review.
+We welcome contributions to GitChat. If you'd like to contribute, please fork the repository and create a pull request, or you can open an issue with the tag "enhancement."
+
+## License
+
+GitChat is open-source software licensed under the MIT license.
 
 ## Contact
 
-For any further questions or requests, please open an issue in the repository or contact the repository owner directly.
+For more information or support, please submit an issue in the project's GitHub repository: [SajayR/GitChat.git](https://github.com/SajayR/GitChat).
+
+This README serves as an overall guide to the GitChat project. Specific instructions for running the frontend and backend separately can be found in their respective README.md documents within their directories.
