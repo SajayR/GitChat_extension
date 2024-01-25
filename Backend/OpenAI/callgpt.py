@@ -1,8 +1,8 @@
 import openai
 import os
 from pymongo import MongoClient
-
-openai.api_key = "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"
+import os
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 client = MongoClient('mongodb://localhost:27017/')
 db = client.GitChat
