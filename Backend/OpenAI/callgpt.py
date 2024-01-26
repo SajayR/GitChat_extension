@@ -33,24 +33,29 @@ def getanswer(messages: list, session_id: str) -> str:
 gpt-4-1106-preview
 gpt-3.5-turbo-1106
 
+gpt-4-turbo-preview
+gpt-3.5-turbo
+
 
 '''
 
 
 
 #MESSEGES OVER HERE NEEDS TO BE FRONTEND MESSAGES
-def getfilenamestopull(filemessages, filelist) -> str:
-    response = openai.chat.completions.create(
-    model="gpt-4-1106-preview",
-    response_format={ "type": "json_object" },
-    messages=filemessages
-    )
-    return response.choices[0].message.content 
-
-
-
-
-
+def getfilenamestopull(filemessages, filelist, session_id) -> str:
+    try:
+        response = openai.chat.completions.create(
+        model="gpt-4-turbo-preview",
+        response_format={ "type": "json_object" },
+        messages=filemessages
+        )
+        return response.choices[0].message.content 
+    except:
+        reply_content = "Sorry, there was an error choosing files :3"
+        collection.update_one({"session_id": session_id},{"$pop": {"filemesseges": 1}})
+        collection.update_one({"session_id": session_id}, {"$push": {"frontend": {"role": "assistant", "content": reply_content}}})
+        return reply_content
+        
 
 
 def getanswer(messages: list, session_id: str) -> str:
@@ -58,7 +63,7 @@ def getanswer(messages: list, session_id: str) -> str:
         messages = [messages[0], messages[-1]]
 
         response = openai.chat.completions.create(
-        model="gpt-4-1106-preview",
+        model="gpt-4-turbo-preview",
         messages=messages,
         stream=True
         )

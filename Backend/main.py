@@ -4,15 +4,12 @@ from flask import Flask, request, jsonify, make_response
 from GitScripts import gitmain, extracting
 from flask_cors import CORS
 import OpenAI.daddy as chatmain
-
-# Get the directory of the current script
 script_dir = os.path.dirname(os.path.realpath(__file__))
 import threading
 from pymongo import MongoClient
 
 client = MongoClient('mongodb://localhost:27017/')
 try:
-    # The ismaster command is cheap and does not require auth.
     client.admin.command('ismaster')
     print("MongoDB is connected!")
 except Exception as e:
@@ -36,9 +33,8 @@ def getgitfiles():
         print("Repo already exists")
         os.system(f'rm -rf {repo_path}')
     else:
-        print("Repo does not exist\n\n\n\n\n\n\n\n\n")
-    data['session_id'] = session_id 
-    #session_id=data['session_id']
+        print("Repo does not exist")
+    data['session_id'] = session_id  # Make sure to include sessionId in the data
 
     def thread_target():
         with app.app_context():
@@ -84,14 +80,18 @@ def chaosbaby():
 def handle_new_prompt(data):
     prompt = data['prompt']
     session_id = data['session_id']
+    # Check the last element in the 'frontend' array in the database
     
+    last_entry = collection.find_one({"session_id": session_id}, {"frontend": 1})
+    if len(last_entry['frontend']) > 0:
+        if last_entry and last_entry['frontend'][-1]['role'] == "assistant" and last_entry['frontend'][-1]['content'] == "Sorry, there was an error choosing files :3":
+            # If the last entry is the error message, delete the last two entries (the prompt and the error message)
+            collection.update_one({"session_id": session_id}, {"$pop": {"frontend": 1}})
+            collection.update_one({"session_id": session_id}, {"$pop": {"frontend": 1}})
+        
     collection.update_one({"session_id": session_id}, {"$set": {"status": "processing"}})
-    
-
     chatmain.newprompt(prompt, session_id)
-    
     collection.update_one({"session_id": session_id}, {"$set": {"status": "completed"}})
-    
     return None
 
 @app.route('/get_messages/<session_id>')
@@ -127,10 +127,6 @@ def check_status(session_id: int):
     else:
         return jsonify({"status": "unknown", "error": f"Session_id: {session_id} not found"}), 404
 
-
-
-
 if __name__ == '__main__':
-    newgitdownloaded = True
     app.run(threaded=True, debug=True)
 

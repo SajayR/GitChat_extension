@@ -9,7 +9,10 @@ collection = db.ChatStorage
 
 
 def getrelevantcode(filemessages, filelist: list, owner, repo, session_id) -> str:
-    relevantfiles = callgpt.getfilenamestopull(filemessages, filelist)
+    relevantfiles = callgpt.getfilenamestopull(filemessages, filelist, session_id)
+    if relevantfiles == "Sorry, there was an error choosing files :3":
+        print("Sorry, there was an error choosing files :3")
+        return relevantfiles
     collection.update_one({"session_id": session_id}, {"$push": {"filemesseges": {"role": "assistant", "content": relevantfiles}}})
     relevantfiles = json.loads(relevantfiles)
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", relevantfiles)
@@ -32,6 +35,9 @@ def newprompt(prompt: str, session_id: str) -> None:
 
 
     code = getrelevantcode(filemesseges, filelist, owner, repo, session_id)
+    if code == "Sorry, there was an error choosing files :3":
+        
+        return None
 
     code = code[:25000] if len(code) > 40000 else code
     collection.update_one({"session_id": session_id}, {"$push": {"prompts": {"role": "user", "content": prompt + "\n" + code}}})

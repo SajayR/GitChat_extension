@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 Backend/GitScripts/ClonedUserRepo/
 .cursorignore
+.DS_Store

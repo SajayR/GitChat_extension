@@ -37,17 +37,16 @@ function App() {
       Cookies.set('sessionId', sessionId, { expires: 7 });  
     }
     setSessionId(sessionId);
-   ;
+    checkStatus(sessionId);
     fetchFileDirectory(sessionId); 
-    
-  
-    const intervalId = setInterval(() => {
-      fetchMessages(sessionId); 
-      checkStatus(sessionId);
-    }, 10000);
-    
-    return () => clearInterval(intervalId);
+    fetchMessages(sessionId);
   }, []);
+
+  useEffect(() => {
+    if (chatsRef.current) {
+      chatsRef.current.scrollTop = chatsRef.current.scrollHeight;
+    }
+  }, [messages]);
 
 
 
@@ -115,17 +114,24 @@ const fetchFileDirectory = async (sessionId) => {
     console.log(response.data.message); // Processing new prompt...
     setInput(''); // Clear the input field after sending the message
 
+    // Call checkStatus after sending the message
+    checkStatus(sessionId);
+    fetchMessages(sessionId);
   } catch (error) {
     console.error('Error sending prompt:', error);
   }
-};
+  };
 
 
   const fetchMessages = async (sessionId) => {
     try {
       const response = await axios.get(`/get_messages/${sessionId}`);
-      // If messages are found, set them as usual
       setMessages(response.data);
+  
+      // Continue polling if the status is "processing"
+      if (status.toLowerCase() === 'processing') {
+        setTimeout(() => fetchMessages(sessionId), 1000);
+      }
     } catch (error) {
       console.error('Error fetching messages:', error);
       if (error.response && error.response.status === 404) {
@@ -139,7 +145,19 @@ const fetchFileDirectory = async (sessionId) => {
   const checkStatus = async (sessionId) => {
     try {
       const response = await axios.get(`/check_status/${sessionId}`);
-      setStatus(response.data.status);
+      const newStatus = response.data.status.toLowerCase();
+      setStatus(newStatus);
+  
+      // If the status is "processing", call checkStatus again after a delay
+      if (newStatus === 'processing') {
+        setTimeout(() => {
+          checkStatus(sessionId);
+          fetchMessages(sessionId); // Call fetchMessages along with checkStatus
+        }, 1000);
+      } else if (newStatus !== 'processing') {
+        // If the status has changed from "processing" to something else, fetch messages one last time
+        fetchMessages(sessionId);
+      }
     } catch (error) {
       console.error('Error checking status:', error);
     }
