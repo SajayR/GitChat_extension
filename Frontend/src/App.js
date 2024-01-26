@@ -24,23 +24,22 @@ function App() {
   const [newCodebaseLink, setNewCodebaseLink] = useState('');
   const chatsRef = React.useRef(null);
   const [isLoadingDirectory, setIsLoadingDirectory] = useState(false);
+  const [newgitdownloaded, setNewgitdownloaded] = useState(false);
 
 
 
   
 
   useEffect(() => {
-
-    
     let sessionId = Cookies.get('sessionId');
-    
     if (!sessionId) {
       sessionId = uuidv4();  
       Cookies.set('sessionId', sessionId, { expires: 7 });  
     }
-
     setSessionId(sessionId);
-    fetchFileDirectory(sessionId);  
+   ;
+    fetchFileDirectory(sessionId); 
+    
   
     const intervalId = setInterval(() => {
       fetchMessages(sessionId); 
@@ -55,33 +54,36 @@ function App() {
 
 
 
-const handleGitHubSubmit = async () => {
-  // Ensure the URL starts with https:// and ends with .git
-  let formattedUrl = gitHubUrl;
-  if (!formattedUrl.startsWith('https://')) {
-    formattedUrl = 'https://' + formattedUrl;
-  }
-  if (!formattedUrl.endsWith('.git')) {
-    formattedUrl += '.git';
-  }
-
-  try {
-    const response = await axios.post('/gitget', {
-      link: formattedUrl,
-      session_id: sessionId,
-    });
-    if (response.status === 200) {
-      setNewCodebaseLink(formattedUrl);
-      setShowDarkPopup(false);
-      setGitHubUrl('');
-      fetchFileDirectory(sessionId); 
-    } else {
-      console.error('Error submitting GitHub URL:', response);
+  const handleGitHubSubmit = async () => {
+    // Ensure the URL starts with https:// and ends with .git
+    let formattedUrl = gitHubUrl;
+    if (!formattedUrl.startsWith('https://')) {
+      formattedUrl = 'https://' + formattedUrl;
     }
-  } catch (error) {
-    console.error('Error submitting GitHub URL:', error);
-  }
-};
+    if (!formattedUrl.endsWith('.git')) {
+      formattedUrl += '.git';
+    }
+  
+    try {
+      const response = await axios.post('/gitget', {
+        link: formattedUrl,
+        session_id: sessionId,
+      });
+      if (response.status === 200) {
+        setNewCodebaseLink(formattedUrl);
+        setShowDarkPopup(false);
+        setGitHubUrl('');
+        if (response.data.file_directory) {
+          const parsedDirectory = parseFileDirectory(response.data.file_directory);
+          setFileDirectory(parsedDirectory);
+        }
+      } else {
+        console.error('Error submitting GitHub URL:', response);
+      }
+    } catch (error) {
+      console.error('Error submitting GitHub URL:', error);
+    }
+  };
 
 const fetchFileDirectory = async (sessionId) => {
   // console.log('Fetching file directory...');
@@ -100,6 +102,7 @@ const fetchFileDirectory = async (sessionId) => {
      console.error('Error fetching file directory:', error);
    } finally {
      setIsLoadingDirectory(false);
+     
    }
  };
 

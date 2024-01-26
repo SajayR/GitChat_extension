@@ -41,27 +41,30 @@ def getgitfiles():
     #session_id=data['session_id']
 
     def thread_target():
-        gitmain.getGit(data)
-        global newgitdownloaded
-        newgitdownloaded = True
+        with app.app_context():
+            gitmain.getGit(data)
+            file_directory = get_file_directory_data(session_id)
+            if file_directory:
+                return jsonify({"message": "Git processing completed.", "file_directory": file_directory}), 200
+            else:
+                return jsonify({"message": "Git processing completed, but no file directory found."}), 200
+        
 
-    thread = threading.Thread(target=thread_target)
-    thread.start()
-    thread.join()  # This will wait until the thread has completed
-    return jsonify({"message": "Git processing started..."}), 200
+    return thread_target()
+    
 
+def get_file_directory_data(sessionId: str):
+    session_data = collection.find_one({"session_id": sessionId}, {"gitfileslist": 1})
+    if session_data:
+        return session_data["gitfileslist"]
+    else:
+        return None
+    
 @app.route('/get_file_directory/<sessionId>')
 def get_file_directory(sessionId: str):
-    print(sessionId)
-    global newgitdownloaded
-    while(not newgitdownloaded):
-        pass
-    session_data = collection.find_one({"session_id": sessionId}, {"gitfileslist": 1})
-    print("Session Data: ", session_data)
-    if session_data:
-        newgitdownloaded = False
-        return jsonify({"file_directory": session_data["gitfileslist"]})
-        
+    file_directory = get_file_directory_data(sessionId)
+    if file_directory:
+        return jsonify({"file_directory": file_directory})
     else:
         return jsonify({"error": f"Session_id: {sessionId} not found"}), 404
 
