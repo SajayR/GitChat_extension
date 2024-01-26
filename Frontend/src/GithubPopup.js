@@ -4,18 +4,19 @@ import logo from './assets/logo2.png';
 
 const GitHubPopup = ({ show, onClose, onGitHubSubmit, gitHubUrl, setGitHubUrl }) => {
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const validateGitHubUrl = (url) => {
-    const regex = /https:\/\/github\.com\/([^/]+)\/([^/.]+)/;
+    const regex = /^https:\/\/github\.com\/[^/]+\/[^/]+(\.git)?$/;
     return regex.test(url);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateGitHubUrl(gitHubUrl)) {
-      // Valid GitHub URL, proceed with the submit function
-      onGitHubSubmit();
+      setIsLoading(true);
+      await onGitHubSubmit();
+      setIsLoading(false);
     } else {
-      // Invalid GitHub URL, show an error
       setError('Invalid GitHub Repository URL');
     }
   };
@@ -32,8 +33,9 @@ const GitHubPopup = ({ show, onClose, onGitHubSubmit, gitHubUrl, setGitHubUrl })
               value={gitHubUrl}
               onChange={(e) => setGitHubUrl(e.target.value)}
             />
-            <button onClick={handleSubmit}>Submit</button>
+            <button onClick={handleSubmit} disabled={isLoading}>Submit</button>
             <button onClick={onClose}>Cancel</button>
+            {isLoading && <p>Loading...</p>}
             {error && <p className="error">{error}</p>}
           </div>
         </div>
