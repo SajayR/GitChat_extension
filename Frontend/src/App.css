@@ -16,26 +16,33 @@ body {
 
 .App {
   display: flex;
-  height: 100vh;
+  height: 100%;
+  width: 100vw; /* Ensure the app fills the full viewport width */
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 .sideBar {
-  width: 25%; /* Assign a width percentage to the sidebar */
-  min-width: 250px; /* You can set a minimum width for the sidebar if needed */
+  position: absolute; /* Position sidebar absolutely to overlay the chat */
+  top: 0;
+  left: 0;
+  height: 100%;
+  z-index: 99; /* Ensure sidebar is above the chat window */
+  transition: transform 0.3s; /* Animate the sidebar movement */
+  transform: translateX(-100%); /* Start off-screen */
+  background: #333; /* Dark background color */
   /* ... other styles ... */
 }
 
-
 .main {
-  flex: 9;
-  width: 75%; /* This should be the rest of the width */
+  flex: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end; /* Aligns the children to the bottom */
-  height: calc(100vh - 4rem); /* Full height minus the height of the chatFooter */
-  margin: 0; /* Adjust the margin as needed */
+  justify-content: space-between;
+  height: calc(100vh - 4rem); /* Adjusted to fill the height */
   padding-bottom: 4rem; /* Space for chatFooter */
+  /* Removed width: 75%; to allow .main to fill the flex container */
 }
 
 .logo {
@@ -153,6 +160,7 @@ body {
 }
 
 .chats {
+  box-sizing: border-box;
   overflow-y: auto;
   scroll-behavior: smooth;
   width: 100%;
@@ -166,14 +174,6 @@ body {
 }
 
 
-/* .chat {
-  margin: 1rem;
-  padding: 2rem 3rem;
-  font-size: 1.2rem;
-  display: flex;
-  align-items: flex-start;
-  text-align: justify;
-  word-break: break-word;  Add this line */
 
 
 role-label {
@@ -210,13 +210,6 @@ role-label {
   color: #6C757D; /* Assistant color */
 }
 
-
-
-/* User message styling */
-
-
-
-
 .chat {
   display: flex;
   align-items: center;
@@ -243,17 +236,18 @@ role-label {
 }
 
 .chatFooter {
+  box-sizing: border-box;
   position: fixed; /* Keep it at the bottom */
   bottom: 0;
-  left: 25%;
-  width: 75%;
+  
+  width: 100%; /* Take up the remaining width */
   display: flex;
   align-items: center;
   justify-content: space-between; /* Space between input and status */
   background: #1b1b1e;
   padding: 1rem;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-  z-index: 99;
+  z-index: 95;
 }
 .inp {
   flex-grow: 1; /* Allow input to grow and fill available space */
@@ -355,6 +349,7 @@ role-label {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  z-index: 200;
 }
 
 .logoImage {
@@ -444,21 +439,6 @@ role-label {
 /* ... other styles ... */
 
 /* Common styles for all screen sizes */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  font-size: 65.5%;
-}
-
-body {
-  background: #151419;
-  color: #fbfbfb;
-  font-family: 'Poppins', sans-serif;
-}
 
 
 .chat {
@@ -508,4 +488,55 @@ body {
   width: 40px;
   height: 40px;
   margin-right: 0.1rem; /* Maintain consistent spacing from the right edge */
+}
+
+/* ... existing styles ... */
+
+/* Styles for the toggle button */
+.toggleSidebarButton {
+  background: none;
+  border: none;
+  color: #fbfbfb;
+  font-size: 1.5rem;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  right: -25px; /* Position it to the left edge of the sidebar */
+  z-index: 10;
+}
+
+/* Adjust the main content when the sidebar is collapsed */
+.App.sidebar-collapsed .main {
+  margin-left: 60px; /* Adjust based on the collapsed sidebar width */
+}
+
+/* Adjust the sidebar when it is collapsed */
+.sideBar.collapsed {
+  width: 100%; /* Reduced width for icons only */
+  transform: translateX(0);
+  transition: width 0.3s;
+}
+
+
+/* Responsive adjustments for narrow screens */
+
+/* ... existing styles ... */
+.closeSidebarBtn {
+  background: #878787;
+  border: none;
+  color: #fbfbfb;
+  padding: 1.5rem;
+  font-size: 1.5rem;
+  width: 25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  margin-bottom: 3rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.closeSidebarBtn:hover {
+  background-color: #555; /* Darken button on hover */
 }

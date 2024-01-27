@@ -25,6 +25,7 @@ function App() {
   const chatsRef = React.useRef(null);
   const [isLoadingDirectory, setIsLoadingDirectory] = useState(false);
   const [newgitdownloaded, setNewgitdownloaded] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
 
 
@@ -50,7 +51,9 @@ function App() {
 
 
 
-
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
 
 
   const handleGitHubSubmit = async () => {
@@ -72,10 +75,12 @@ function App() {
         setNewCodebaseLink(formattedUrl);
         setShowDarkPopup(false);
         setGitHubUrl('');
+        fetchMessages(sessionId);
         if (response.data.file_directory) {
           const parsedDirectory = parseFileDirectory(response.data.file_directory);
           setFileDirectory(parsedDirectory);
         }
+        setSidebarCollapsed(false);
       } else {
         console.error('Error submitting GitHub URL:', response);
       }
@@ -130,7 +135,7 @@ const fetchFileDirectory = async (sessionId) => {
   
       // Continue polling if the status is "processing"
       if (status.toLowerCase() === 'processing') {
-        setTimeout(() => fetchMessages(sessionId), 1000);
+        setTimeout(() => fetchMessages(sessionId), 100);
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -276,16 +281,21 @@ return (
 
 
 return (
-    <div className="App">
-      <div className='sideBar'>
+    <div className={`App ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+      <div className={`sideBar ${sidebarCollapsed ? 'collapsed' : ''}`}>
+        <button onClick={toggleSidebar} className="toggleSidebarButton">
+          {sidebarCollapsed ? '►' : '◄'} {/* Simple text-based toggle icon */}
+        </button>
         <div className='upperSide'>
           <div className='upperSideTop'><img src={logo} alt='' className='logo'/><span className='brand'>GitChat</span></div>
-          <button className='midBtn' onClick={openDialog}>
+          <button className='closeSidebarBtn' onClick={toggleSidebar}>
+          Close Sidebar
+          </button>
+          <button className='closeSidebarBtn' onClick={openDialog}>
             <img src={addBtn} alt='' className='addBtn'/>New Codebase
           </button>
           
-          {newCodebaseLink && (
-  <a href={newCodebaseLink}
+          {newCodebaseLink && (<a href={newCodebaseLink}
     target="_blank"
     rel="noopener noreferrer"
     className="newCodebaseLink"
