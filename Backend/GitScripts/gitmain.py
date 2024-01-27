@@ -40,7 +40,29 @@ def getGit(details):   #json file
     #print(cummiesinmytummies)
     user = cummiesinmytummies[1]
     repo = cummiesinmytummies[2]
-    if collection.find_one({"session_id": session_id}):
-        collection.delete_one({"session_id": session_id})
-    collection.insert_one({"session_id": session_id,"user": user, "repo": repo, "gitfileslist": cummiesinmytummies[0], "frontend": [], "prompts": [{"role": "system", "content": systemmessage}], "filemesseges": [{"role": "system", "content": "You are an LLM with the job to identify code files in a codebase that are relevant to a user's prompt. You will be provided with the prompt and the exact file names and positions. Reply with a JSON object where the keys are the exact names of the files to contain, and the value set to 1 , containing the exact names of the files you think are relevant to the prompt. It is highly important that the exact names of the files is maintained. If you think no files are relevant, reply with an empty JSON object. If there is a ReadMe file, always include it in the JSON object"}]})   
+    existing_entry = collection.find_one({"session_id": session_id})
+    if existing_entry:
+        # Update the existing document
+        collection.update_one(
+            {"session_id": session_id},
+            {"$set": {
+                "user": user,
+                "repo": repo,
+                "gitfileslist": cummiesinmytummies[0],
+                "frontend": [],
+                "prompts": [{"role": "system", "content": systemmessage}],
+                "filemesseges": [{"role": "system", "content": "You are an LLM with the job to identify code files in a codebase that are relevant to a user's prompt. You will be provided with the prompt and the exact file names and positions. Reply with a JSON object where the keys are the exact names of the files to contain, and the value set to 1 , containing the exact names of the files you think are relevant to the prompt. It is highly important that the exact names of the files is maintained. If you think no files are relevant, reply with an empty JSON object. If there is a ReadMe file, always include it in the JSON object"}]
+            }}
+        )
+    else:
+        # Insert a new document
+        collection.insert_one({
+            "session_id": session_id,
+            "user": user,
+            "repo": repo,
+            "gitfileslist": cummiesinmytummies[0],
+            "frontend": [],
+            "prompts": [{"role": "system", "content": systemmessage}],
+            "filemesseges": [{"role": "system", "content": "You are an LLM with the job to identify code files in a codebase that are relevant to a user's prompt. You will be provided with the prompt and the exact file names and positions. Reply with a JSON object where the keys are the exact names of the files to contain, and the value set to 1 , containing the exact names of the files you think are relevant to the prompt. It is highly important that the exact names of the files is maintained. If you think no files are relevant, reply with an empty JSON object. If there is a ReadMe file, always include it in the JSON object"}]
+        })
     return 0

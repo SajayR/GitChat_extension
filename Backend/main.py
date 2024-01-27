@@ -21,17 +21,29 @@ collection = db.ChatStorage
 
 
 app = Flask(__name__)
-CORS(app) #PLS EDIT EXTENSION ID IF GOTTEN
+CORS(app, resources={r"/*": {"origins": ["http://127.0.0.1:5000", "chrome-extension://jpmoddkifeegpkknkmipodebchgcoahf"]}})
 
 @app.route('/gitget', methods=['POST'])
 def getgitfiles():
     data = request.get_json()
     session_id = data.get('session_id')
-    
+    git_url = data.get('link')
+    print("GIT URL ENTRY:",git_url)
+    existing_entry = collection.find_one({"session_id": session_id})
+    #print(existing_entry)
+    if existing_entry and existing_entry.get("giturl") == git_url:
+        return jsonify({"message": "Git repo already exists."}), 200
+    else:
+        if existing_entry:
+            print("Existing entry found")
+            collection.update_one({"session_id": session_id}, {"$set": {"giturl": str(git_url)}})
+        else:
+            print("No existing entry")
+            collection.insert_one({"session_id": session_id, "giturl": git_url})
     repo_path = os.path.join(script_dir, 'GitScripts/ClonedUserRepo', session_id)
-    print("Repo Path: ", repo_path)
+    #print("Repo Path: ", repo_path)
     if os.path.exists(repo_path):
-        print("Repo already exists")
+        #print("Repo already exists")
         os.system(f'rm -rf {repo_path}')
     else:
         print("Repo does not exist")
@@ -42,7 +54,7 @@ def getgitfiles():
             gitmain.getGit(data)
             file_directory = get_file_directory_data(session_id)
             if file_directory:
-                return jsonify({"message": "Git processing completed.", "file_directory": file_directory}), 200
+                return jsonify({"message": "Git processing completed."}), 200
             else:
                 return jsonify({"message": "Git processing completed, but no file directory found."}), 200
         
