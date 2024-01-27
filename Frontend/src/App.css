@@ -16,8 +16,8 @@ body {
 
 .App {
   display: flex;
-  height: 100%;
-  width: 100vw; /* Ensure the app fills the full viewport width */
+  height: 500px; /* Set the height */
+  width: 500px; /* Set the width */
   overflow-x: hidden; /* Prevent horizontal scroll */
 }
 

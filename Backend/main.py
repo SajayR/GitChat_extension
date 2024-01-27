@@ -21,12 +21,13 @@ collection = db.ChatStorage
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "chrome-extension://<extension-id>"}})  #PLS EDIT EXTENSION ID IF GOTTEN
+CORS(app) #PLS EDIT EXTENSION ID IF GOTTEN
 
 @app.route('/gitget', methods=['POST'])
 def getgitfiles():
-    session_id = request.cookies.get('sessionId')  # Retrieve sessionId from cookie
     data = request.get_json()
+    session_id = data.get('session_id')
+    
     repo_path = os.path.join(script_dir, 'GitScripts/ClonedUserRepo', session_id)
     print("Repo Path: ", repo_path)
     if os.path.exists(repo_path):
@@ -56,8 +57,9 @@ def get_file_directory_data(sessionId: str):
     else:
         return None
     
-@app.route('/get_file_directory/<sessionId>')
-def get_file_directory(sessionId: str):
+@app.route('/get_file_directory')
+def get_file_directory():
+    sessionId = request.args.get('session_id')
     file_directory = get_file_directory_data(sessionId)
     if file_directory:
         return jsonify({"file_directory": file_directory})
@@ -66,8 +68,9 @@ def get_file_directory(sessionId: str):
 
 @app.route('/newprompt', methods=['POST'])
 def chaosbaby():
-    session_id = request.cookies.get('sessionId')  # Retrieve sessionId from cookie
     data = request.get_json()
+    session_id = data.get('session_id')  # Retrieve sessionId from cookie
+    
 
     if 'prompt' in data and session_id:
         data['session_id'] = session_id  # Make sure to include sessionId in the data
@@ -94,8 +97,9 @@ def handle_new_prompt(data):
     collection.update_one({"session_id": session_id}, {"$set": {"status": "completed"}})
     return None
 
-@app.route('/get_messages/<session_id>')
-def get_messages(session_id: int) -> dict:
+@app.route('/get_messages')
+def get_messages():
+    session_id = request.args.get('session_id')
     frontend_messages = []
     messages = collection.find_one({"session_id": session_id})
 
@@ -119,8 +123,9 @@ def get_messages(session_id: int) -> dict:
 
 
 
-@app.route('/check_status/<session_id>')
-def check_status(session_id: int):
+@app.route('/check_status')
+def check_status():
+    session_id = request.args.get('session_id')
     session_data = collection.find_one({"session_id": session_id}, {"status": 1})
     if session_data and "status" in session_data:
         return jsonify({"status": session_data["status"]})

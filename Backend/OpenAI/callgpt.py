@@ -63,7 +63,7 @@ def getanswer(messages: list, session_id: str) -> str:
         messages = [messages[0], messages[-1]]
 
         response = openai.chat.completions.create(
-        model="gpt-4-turbo-preview",
+        model="gpt-3.5-turbo",
         messages=messages,
         stream=True
         )

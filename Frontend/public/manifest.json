@@ -1,13 +1,17 @@
 {
-    "manifest_version":3,
+    "manifest_version":2,
     "name":"Chrome",
     "description":"Demo",
     "version":"1.0.0",
-    "action":{
-        "default_popup":"index.html",
-        "default_title":"open"
-    },
+    "browser_action": {
+        "default_popup": "index.html",
+        "default_title": "Open"
+      },
+    
     "permissions":[
-        "scripting"
+        
+        "cookies",
+        "storage"
     ]
+
 }

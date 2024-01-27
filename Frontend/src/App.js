@@ -10,7 +10,7 @@ import GitHubPopup from './GithubPopup';
 import Cookies from 'js-cookie';
 import { v4 as uuidv4 } from 'uuid';  
 
-
+/* global chrome */
 
 function App() {
   const [input, setInput] = useState("");
@@ -32,15 +32,24 @@ function App() {
   
 
   useEffect(() => {
-    let sessionId = Cookies.get('sessionId');
-    if (!sessionId) {
-      sessionId = uuidv4();  
-      Cookies.set('sessionId', sessionId, { expires: 7 });  
-    }
-    setSessionId(sessionId);
-    checkStatus(sessionId);
-    fetchFileDirectory(sessionId); 
-    fetchMessages(sessionId);
+    chrome.storage.local.get(['sessionId'], function(result) {
+      if (result.sessionId) {
+        setSessionId(result.sessionId);
+        checkStatus(result.sessionId);
+        fetchFileDirectory(result.sessionId); 
+        fetchMessages(result.sessionId);
+      } else {
+        // Handle the absence of sessionId
+        const newSessionId = uuidv4(); // Generate a new sessionId
+        chrome.storage.local.set({ sessionId: newSessionId }, () => {
+          console.log('New sessionId is stored in Chrome storage');
+          setSessionId(newSessionId);
+          checkStatus(newSessionId);
+          fetchFileDirectory(newSessionId); 
+          fetchMessages(newSessionId);
+        });
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -67,7 +76,7 @@ function App() {
     }
   
     try {
-      const response = await axios.post('/gitget', {
+      const response = await axios.post('http://127.0.0.1:5000/gitget', {
         link: formattedUrl,
         session_id: sessionId,
       });
@@ -94,7 +103,7 @@ const fetchFileDirectory = async (sessionId) => {
    setIsLoadingDirectory(true);
    try {
      //console.log('Sending request to /get_file_directory');
-     const response = await axios.get(`/get_file_directory/${sessionId}`);
+     const response = await axios.get(`http://127.0.0.1:5000/get_file_directory?session_id=${sessionId}`);
      if (response.data.file_directory) {
       // console.log('File directory found:', response.data.file_directory);
        const parsedDirectory = parseFileDirectory(response.data.file_directory);
@@ -112,13 +121,13 @@ const fetchFileDirectory = async (sessionId) => {
 
  const handleSend = async () => {
   try {
-    const response = await axios.post('/newprompt', {
+    const response = await axios.post('http://127.0.0.1:5000/newprompt', {
       prompt: input,
       session_id: sessionId,
     });
     console.log(response.data.message); // Processing new prompt...
     setInput(''); // Clear the input field after sending the message
-
+    
     // Call checkStatus after sending the message
     checkStatus(sessionId);
     fetchMessages(sessionId);
@@ -130,7 +139,7 @@ const fetchFileDirectory = async (sessionId) => {
 
   const fetchMessages = async (sessionId) => {
     try {
-      const response = await axios.get(`/get_messages/${sessionId}`);
+      const response = await axios.get(`http://127.0.0.1:5000/get_messages?session_id=${sessionId}`);
       setMessages(response.data);
   
       // Continue polling if the status is "processing"
@@ -149,8 +158,9 @@ const fetchFileDirectory = async (sessionId) => {
 
   const checkStatus = async (sessionId) => {
     try {
-      const response = await axios.get(`/check_status/${sessionId}`);
+      const response = await axios.get(`http://127.0.0.1:5000/check_status?session_id=${sessionId}`);
       const newStatus = response.data.status.toLowerCase();
+      console.log('New status:', newStatus);
       setStatus(newStatus);
   
       // If the status is "processing", call checkStatus again after a delay
@@ -158,7 +168,7 @@ const fetchFileDirectory = async (sessionId) => {
         setTimeout(() => {
           checkStatus(sessionId);
           fetchMessages(sessionId); // Call fetchMessages along with checkStatus
-        }, 1000);
+        }, 100);
       } else if (newStatus !== 'processing') {
         // If the status has changed from "processing" to something else, fetch messages one last time
         fetchMessages(sessionId);
