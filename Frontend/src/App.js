@@ -97,7 +97,11 @@ function App() {
         console.error('Error submitting GitHub URL:', response);
       }
     } catch (error) {
-      console.error('Error submitting GitHub URL:', error);
+      if (error.response && error.response.status === 404) {
+        console.error('GitHub URL not found:', error);
+      } else {
+        console.error('Error submitting GitHub URL:', error);
+      }
     }
   };
 
@@ -116,9 +120,12 @@ function App() {
     checkStatus(sessionId);
     fetchMessages(sessionId);
   } catch (error) {
-    console.error('Error sending prompt:', error);
+    if (error.response && error.response.status === 404) {
+      console.error('Endpoint not found:', error);
+    } else {
+      console.error('Error sending prompt:', error);
   }
-  };
+  }};
 
 
   const fetchMessages = async (sessionId) => {
@@ -131,12 +138,13 @@ function App() {
         setTimeout(() => fetchMessages(sessionId), 100);
       }
     } catch (error) {
-      console.error('Error fetching messages:', error);
       if (error.response && error.response.status === 404) {
+        console.error('No messages found for this session:', error);
         setMessages([{ from: "bot", content: "Welcome to GitChat! Start by typing your message." }]);
-      }
+      } else {
+        console.error('Error fetching messages:', error);
     }
-  };
+  }};
 
  
 
@@ -158,9 +166,12 @@ function App() {
         fetchMessages(sessionId);
       }
     } catch (error) {
-      console.error('Error checking status:', error);
+      if (error.response && error.response.status === 404) {
+        console.error('Session not found:', error);
+      } else {
+        console.error('Error checking status:', error);
     }
-  };
+  }};
 
 
 
