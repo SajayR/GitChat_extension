@@ -25,10 +25,12 @@ GitChat is a Chrome Extension designed for developers to better understand and n
 - External APIs: GitHub, OpenAI GPT
 
 ## Future Enhancements ✅
-- [ ] Adding support for more programming languages.
-- [ ] Enhancing user authentication and session security.
-- [ ] Implementing real-time updates using WebSockets or similar technologies.
-- [ ] Improving natural language processing to handle more complex queries.
+- [ ] Adding Multiple chat histories
+- [ ] Moving to TogetherAI API for lower costs(will have to adjust for different output styles)
+- [ ] Implementing ColBERT(Provided enough computation)
+- [ ] Better UI
+- [ ] Better User Management, chat limits etc.
+- [ ] Different Backend Server
 
 ##License
 GitChat is released under the MIT License. This license grants you permission to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, provided that the above copyright notice and this permission notice are included in all copies or substantial portions of the software.
@@ -43,7 +45,6 @@ Email: techrend08@gmail.com
 Your thoughts and suggestions are always welcome as they help us improve and evolve GitChat.
 
 ##Acknowledgments
-Special thanks to my teammates, Dhruval and Ryyan, for their invaluable contributions during the DevStorm Hackathon. Their expertise and dedication were pivotal in building the first webapp prototype of GitChat. Their collaborative spirit and technical prowess have significantly shaped the development of this project.
+Special thanks to my teammates, [Ryyan](https://github.com/ryyan2407)  and [Dhruval](https://github.com/dhruval30), for their invaluable contributions during the DevStorm Hackathon. Their expertise and dedication were pivotal in building the first webapp prototype of GitChat. Their collaborative spirit and technical prowess have significantly shaped the development of this project.
 
-[Dhruval:](https://github.com/dhruval30)
-[Ryyan:](https://github.com/ryyan2407) 
+
