@@ -38,12 +38,12 @@ The MIT License is a permissive license that is short and to the point. It lets 
 ##Contact
 For any inquiries or feedback regarding GitChat, feel free to reach out.
 
-Twitter: [SajayRRR][https://twitter.com/SajayRRR]
+Twitter: [SajayRRR](https://twitter.com/SajayRRR)
 Email: techrend08@gmail.com
 Your thoughts and suggestions are always welcome as they help us improve and evolve GitChat.
 
 ##Acknowledgments
 Special thanks to my teammates, Dhruval and Ryyan, for their invaluable contributions during the DevStorm Hackathon. Their expertise and dedication were pivotal in building the first webapp prototype of GitChat. Their collaborative spirit and technical prowess have significantly shaped the development of this project.
 
-[Dhruval:][https://github.com/dhruval30] 
-[Ryyan:][https://github.com/ryyan2407] 
+[Dhruval:](https://github.com/dhruval30)
+[Ryyan:](https://github.com/ryyan2407) 
