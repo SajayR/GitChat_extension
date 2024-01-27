@@ -1,92 +1,49 @@
-# GitChat: A Web Interface for Understanding Codebases
+GitChat: A Web Interface for Understanding Codebases
 
-GitChat is a web application tailored to facilitate conversations around large codebases by providing an interactive chat interface through which users can ask questions about the code. The application employs OpenAI's GPT models to interpret user inquiries and to reference relevant parts of the codebase, enhancing the understandability of massive projects.
+## Overview
+
+GitChat is a Chrome Extension designed for developers to better understand and navigate large codebases. This tool leverages the power of OpenAI's GPT models to provide an interactive chat interface where users can ask questions about code and unearth insights through meaningful conversation. The codebase splits into a backend built with Flask in Python and a frontend constructed in React.
 
 ## Key Features
+- Interactive chat interface that integrates with GitHub repositories.
+- Natural language processing capabilities thanks to OpenAI's GPT models.
+- Extension capabilities allowing users to work directly within the Chrome browser.
 
-- Chatbot interface to interact and ask questions on a massive codebase.
-- Integration with GitHub to fetch repositories and analyze code.
-- A web-based frontend built with React, providing a user-friendly experience.
-- Backend support using Flask to manage requests and leverage the OpenAI API for natural language understanding.
+## Technical Architecture
+### Backend
+- **Flask Application:** Entrypoint is `main.py` where the Flask server and API endpoints are configured.
+- **OpenAI Integration:** `callgpt.py` interfaces with the OpenAI API for generating responses using natural language understanding.
+- **Session Management:** MongoDB is used to store session information including chat logs and repository data.
 
-## Project Structure
-
-The GitChat codebase comprises several key components, as outlined below:
-
-- `Backend`: A Flask-powered server that handles requests and communicates with the OpenAI API and MongoDB for session management.
-  - `OpenAI`: Contains modules such as `callgpt.py` for interacting with the OpenAI API to process user questions and `daddy.py` which orchestrates the fetching of relevant code given a user’s prompt.
-  - `GitScripts`: Scripts like `extracting.py` for extracting repository contents from GitHub and `gitmain.py` to manage the retrieval and processing of the Git repository structure.
-  - `main.py`: The Flask application entry point that sets up the server and endpoints.
-
-- `Frontend`: The user interface created with React.
-  - `src`: Contains the source code of the React application, including `App.js` which is the main component handling user interactions and display logic.
+### Frontend
+- **React Application:** The `src/app.js` file serves as the starting point for the frontend application, managing state and user interactions.
 
 ## Dependencies
+- Frontend: React.js (v17+), Axios, React-DOM, js-cookie, uuid
+- Backend: Flask (v1.1.2), PyMongo, OpenAI API, Python-dotenv
+- Database: MongoDB (v4.0+)
+- External APIs: GitHub, OpenAI GPT
 
-- Frontend: React.js, Axios, React-DOM, js-cookie, uuid
-- Backend: Flask, PyMongo, OpenAI, Python-dotenv
-- Database: MongoDB
-- External: OpenAI API, GitHub API
+## Future Enhancements ✅
+- [ ] Adding support for more programming languages.
+- [ ] Enhancing user authentication and session security.
+- [ ] Implementing real-time updates using WebSockets or similar technologies.
+- [ ] Improving natural language processing to handle more complex queries.
 
-## Getting Started
+##License
+GitChat is released under the MIT License. This license grants you permission to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, provided that the above copyright notice and this permission notice are included in all copies or substantial portions of the software.
 
-To get GitChat up and running, follow the steps below for setup:
+The MIT License is a permissive license that is short and to the point. It lets people do anything they want with your code as long as they provide attribution back to you and don’t hold you liable.
 
-### Backend Setup
+##Contact
+For any inquiries or feedback regarding GitChat, feel free to reach out.
 
-1. Navigate to the `Backend` directory.
-2. Ensure MongoDB is running on your local machine.
-3. Set up the necessary environment variables, including your OpenAI API key.
-4. Start the Flask server: `python main.py`.
+Twitter: [SajayRRR][https://twitter.com/SajayRRR]
+Email: techrend08@gmail.com
+Your thoughts and suggestions are always welcome as they help us improve and evolve GitChat.
 
-### Frontend Setup
+##Acknowledgments
+Special thanks to my teammates, Dhruval and Ryyan, for their invaluable contributions during the DevStorm Hackathon. Their expertise and dedication were pivotal in building the first webapp prototype of GitChat. Their collaborative spirit and technical prowess have significantly shaped the development of this project.
 
-1. Navigate to the `Frontend` directory.
-2. Run `npm install` to install the necessary node modules.
-3. Set Environment Variables for frontend as necessary.
-4. Start the React app using `npm start`.
-
-## Usage
-
-Once both the frontend and backend are set up, open your web browser and go to `http://localhost:3000` (or the port you specified) to access GitChat. Here, users can:
-
-- Enter a GitHub repository URL to fetch the codebase.
-- Post questions or prompts in the chat interface.
-- Review the chatbot's responses and suggested sections of the code.
-- Navigate the directory of the fetched GitHub repository.
-
-## API Reference
-
-A partial API reference is as follows:
-
-- `/gitget`: POST request to fetch files from a Git repository.
-- `/newprompt`: POST request to send a new prompt to the backend.
-- `/get_messages/<session_id>`: GET request to retrieve chat messages for a session.
-- `/check_status/<session_id>`: GET request to check the status of processing for a session.
-
-Use a REST client like Postman or browser extensions to interact with these APIs.
-
-## Database Schema
-
-The MongoDB schema for session storage consists of the following:
-
-- `session_id`: A unique identifier for each user session.
-- `user`: GitHub username.
-- `repo`: Repository name.
-- `gitfileslist`: List of file paths in the repository.
-- `frontend`: Frontend chat messages.
-- `prompts`: User prompts and system messages.
-
-## Contributing
-
-We welcome contributions to GitChat. If you'd like to contribute, please fork the repository and create a pull request, or you can open an issue with the tag "enhancement."
-
-## License
-
-GitChat is open-source software licensed under the MIT license.
-
-## Contact
-
-For more information or support, please submit an issue in the project's GitHub repository: [SajayR/GitChat.git](https://github.com/SajayR/GitChat).
-
-This README serves as an overall guide to the GitChat project. Specific instructions for running the frontend and backend separately can be found in their respective README.md documents within their directories.
+[Dhruval:][https://github.com/dhruval30] 
+[Ryyan:][https://github.com/ryyan2407] 
