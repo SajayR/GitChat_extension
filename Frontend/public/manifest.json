@@ -9,7 +9,7 @@
       },
     
     "permissions":[
-        
+        "tabs",
         "cookies",
         "storage"
     ]

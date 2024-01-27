@@ -6,7 +6,7 @@ import logo from './assets/logo2.png';
 import addBtn from './assets/add-30.png';
 import sendBtn from './assets/send.svg';
 import userIcon from './assets/botLogo.png';
-import GitHubPopup from './GithubPopup';
+
 import Cookies from 'js-cookie';
 import { v4 as uuidv4 } from 'uuid';  
 
@@ -16,15 +16,11 @@ function App() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [status, setStatus] = useState('idle');
-  const [showDialog, setShowDialog] = useState(false);
-  const [gitHubUrl, setGitHubUrl] = useState('');
-  const[sessionId, setSessionId] = useState('');
+  const [sessionId, setSessionId] = useState('');
   const [fileDirectory, setFileDirectory] = useState([]);
-  const [showDarkPopup, setShowDarkPopup] = useState(true);
-  const [newCodebaseLink, setNewCodebaseLink] = useState('');
   const chatsRef = React.useRef(null);
   const [isLoadingDirectory, setIsLoadingDirectory] = useState(false);
-  const [newgitdownloaded, setNewgitdownloaded] = useState(false);
+  const [newCodebaseLink, setNewCodebaseLink] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
 
@@ -36,8 +32,10 @@ function App() {
       if (result.sessionId) {
         setSessionId(result.sessionId);
         checkStatus(result.sessionId);
-        fetchFileDirectory(result.sessionId); 
-        fetchMessages(result.sessionId);
+         
+        fetchMessages(sessionId);
+        
+        
       } else {
         // Handle the absence of sessionId
         const newSessionId = uuidv4(); // Generate a new sessionId
@@ -45,12 +43,25 @@ function App() {
           console.log('New sessionId is stored in Chrome storage');
           setSessionId(newSessionId);
           checkStatus(newSessionId);
-          fetchFileDirectory(newSessionId); 
+           
           fetchMessages(newSessionId);
         });
       }
     });
   }, []);
+
+  
+  useEffect(() => {
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+      const url = tabs[0].url;
+      if (url.startsWith('https://github.com/')) {
+        if (url !== newCodebaseLink && sessionId) { // Check if sessionId is not an empty string
+          handleGitHubSubmit(url);
+          fetchMessages(sessionId);
+        }
+      }
+    });
+  }, [sessionId]);
 
   useEffect(() => {
     if (chatsRef.current) {
@@ -65,12 +76,9 @@ function App() {
   };
 
 
-  const handleGitHubSubmit = async () => {
-    // Ensure the URL starts with https:// and ends with .git
-    let formattedUrl = gitHubUrl;
-    if (!formattedUrl.startsWith('https://')) {
-      formattedUrl = 'https://' + formattedUrl;
-    }
+  const handleGitHubSubmit = async (url) => {
+    let formattedUrl = url;
+    setNewCodebaseLink(url);
     if (!formattedUrl.endsWith('.git')) {
       formattedUrl += '.git';
     }
@@ -81,14 +89,9 @@ function App() {
         session_id: sessionId,
       });
       if (response.status === 200) {
-        setNewCodebaseLink(formattedUrl);
-        setShowDarkPopup(false);
-        setGitHubUrl('');
+        
         fetchMessages(sessionId);
-        if (response.data.file_directory) {
-          const parsedDirectory = parseFileDirectory(response.data.file_directory);
-          setFileDirectory(parsedDirectory);
-        }
+        
         setSidebarCollapsed(false);
       } else {
         console.error('Error submitting GitHub URL:', response);
@@ -98,26 +101,7 @@ function App() {
     }
   };
 
-const fetchFileDirectory = async (sessionId) => {
-  // console.log('Fetching file directory...');
-   setIsLoadingDirectory(true);
-   try {
-     //console.log('Sending request to /get_file_directory');
-     const response = await axios.get(`http://127.0.0.1:5000/get_file_directory?session_id=${sessionId}`);
-     if (response.data.file_directory) {
-      // console.log('File directory found:', response.data.file_directory);
-       const parsedDirectory = parseFileDirectory(response.data.file_directory);
-       setFileDirectory(parsedDirectory);
-     } else {
-       console.error('File directory not found in response:', response.data);
-     }
-   } catch (error) {
-     console.error('Error fetching file directory:', error);
-   } finally {
-     setIsLoadingDirectory(false);
-     
-   }
- };
+
 
  const handleSend = async () => {
   try {
@@ -182,90 +166,6 @@ const fetchFileDirectory = async (sessionId) => {
 
   
 
-
-
-//HANDING FILE DIRECTORY AND PREIMPLEMENTED DHRUVAL STUFF
-
-const parseFileDirectory = (filePaths) => {
-  const root = {};
-
-  filePaths.forEach((path) => {
-    const parts = path.split('/');
-    let current = root;
-
-    parts.forEach((part, index) => {
-      if (!current[part]) {
-        current[part] = index === parts.length - 1 ? null : {};  // If it's the last part, it's a file; otherwise, it's a directory.
-      }
-      current = current[part];
-    });
-  });
-
-  return root;
-}; 
-
-const [expandedItems, setExpandedItems] = useState({}); // New state to track expanded items
-
-const renderFileDirectory = (directory, path = '', depth = 0) => {
-const entries = Object.entries(directory);
-
-if (!entries.length) return null; // No files or directories
-
-return (
-  <ul style={{ marginTop: '20px', textAlign: 'center', color: '#ddd', listStyle: 'none', fontFamily: 'Roboto Mono, monospace' }}>
-    {entries.map(([key, value]) => {
-      const fullPath = path ? `${path}/${key}` : key;
-
-      const isExpanded = expandedItems[fullPath];
-
-      const toggleExpand = () => {
-        setExpandedItems({
-          ...expandedItems,
-          [fullPath]: !isExpanded,
-        });
-      };
-
-      return (
-        <li key={fullPath} style={{ margin: '7px 0', textAlign: 'left', position: 'relative' }}>
-          {value ? (
-            <>
-              <div
-                className="folder"
-                style={{
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  marginBottom: '5px',
-                  color: '#f56e0f', // Light cyan for folders
-                }}
-                onClick={toggleExpand}
-              >
-                {isExpanded ? '▼' : '►'} {key}
-              </div>
-              {isExpanded && (
-                <div style={{ marginLeft: '25px', borderLeft: '2px dashed #64ffda', padding: '10px' }}>
-                  {/* Adjust the distance and styles as needed */}
-                  {renderFileDirectory(value, fullPath, depth + 1)}
-                </div>
-              )}
-            </>
-          ) : (
-            <span className="file" style={{ color: '#bbb' }}>{key}</span>
-          )}
-        </li>
-      );
-    })}
-  </ul>
-);
-};
-
-  const openDialog = () => {
-    setShowDarkPopup(true);
-  };
-
-  const closeDialog = () => {
-    setShowDarkPopup(false);
-  };
-
   const extractRepoDetails = (githubUrl) => {
     const parts = githubUrl.split('/');
     if (parts.length >= 2) {
@@ -288,51 +188,10 @@ return (
     };
 
 //END OF DHRUVAL STUFF
-
+  
 
 return (
-    <div className={`App ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-      <div className={`sideBar ${sidebarCollapsed ? 'collapsed' : ''}`}>
-        <button onClick={toggleSidebar} className="toggleSidebarButton">
-          {sidebarCollapsed ? '►' : '◄'} {/* Simple text-based toggle icon */}
-        </button>
-        <div className='upperSide'>
-          <div className='upperSideTop'><img src={logo} alt='' className='logo'/><span className='brand'>GitChat</span></div>
-          <button className='closeSidebarBtn' onClick={toggleSidebar}>
-          Close Sidebar
-          </button>
-          <button className='closeSidebarBtn' onClick={openDialog}>
-            <img src={addBtn} alt='' className='addBtn'/>New Codebase
-          </button>
-          
-          {newCodebaseLink && (<a href={newCodebaseLink}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="newCodebaseLink"
-    style={{
-      display: 'block',
-      textAlign: 'center',
-      marginTop: '20px',
-      fontFamily: 'Roboto Mono, monospace',
-      color: '#f56e0f',
-      textDecoration: 'none',
-      fontSize: '16px',
-    }}
-  >
-    {extractRepoDetails(newCodebaseLink).user} / {extractRepoDetails(newCodebaseLink).repo}
-  </a>
-)}
-
-        </div>
-        <div className='fileDirectory'>
-            <h3>File Directory</h3>
-            {isLoadingDirectory ? (
-            <p>Loading directory...</p>
-            ) : (
-            renderFileDirectory(fileDirectory)
-          )}
-          </div>
-      </div>
+    <div className={`App`}>
       <div className='main'>
       <div className='chats' ref={chatsRef}>
         {messages.map((message, index) => (
@@ -344,7 +203,7 @@ return (
       ))}
 
       </div>
-  {!showDarkPopup && (
+  {(
   <div className='chatFooter'>
     <div className='inp'>
       <input type='text' 
@@ -359,16 +218,8 @@ return (
   </div>
 )}
 </div>
-
-      <GitHubPopup
-        show={showDarkPopup}
-        onClose={closeDialog}
-        onGitHubSubmit={handleGitHubSubmit}
-        gitHubUrl={gitHubUrl}
-        setGitHubUrl={setGitHubUrl}
-      />
     </div>
   );
-};
 
+  }
 export default App;
